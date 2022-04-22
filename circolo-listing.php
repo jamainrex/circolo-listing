@@ -17,8 +17,8 @@
  * Plugin URI:        https://circolo.club
  * Description:       This is a short description of what the plugin does. It's displayed in the WordPress admin area.
  * Version:           1.0.0
- * Author:            Jerex Lennon
- * Author URI:        https://circolo.club
+ * Author:            Stamped Strategies Limited
+ * Author URI:        http://www.stampedstrategies.com/
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain:       circolo-listing
