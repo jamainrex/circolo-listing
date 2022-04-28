@@ -72,7 +72,7 @@ class Circolo_Listing {
 		} else {
 			$this->version = '1.0.0';
 		}
-		$this->plugin_name = 'circolo-listing';
+		$this->plugin_name = CIRCOLO_LISTING_PLUGIN_NAME;
 
 		$this->load_dependencies();
 		$this->set_locale();
@@ -113,15 +113,15 @@ class Circolo_Listing {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-circolo-listing-i18n.php';
 
 		/**
+		 * The class responsible for helpers functionality
+		 * of the plugin.
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-circolo-listing-helper.php';
+
+		/**
 		 * The class responsible for defining all actions that occur in the admin area.
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-circolo-listing-admin.php';
-
-		/**
-		 * The class responsible for defining all actions that occur in the public-facing
-		 * side of the site.
-		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-circolo-listing-public.php';
 
 		/**
 		 * The class responsible for defining all actions that occur in the WooCommerce Integration
@@ -130,10 +130,12 @@ class Circolo_Listing {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'integrations/class-circolo-listing-woocommerce.php';
 
 		/**
-		 * The class responsible for defining all custom Templates
+		 * The class responsible for defining all actions that occur in the public-facing
 		 * side of the site.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-circolo-listing-templater.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-circolo-listing-public.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-circolo-listing-restrict-content.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-circolo-listing-shortcodes.php';
 
 		$this->loader = new Circolo_Listing_Loader();
 
@@ -188,7 +190,7 @@ class Circolo_Listing {
 	private function define_public_hooks() {
 
 		$plugin_public = new Circolo_Listing_Public( $this->get_plugin_name(), $this->get_version() );
-
+		$this->loader->add_action( 'init', $plugin_public, 'init' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 

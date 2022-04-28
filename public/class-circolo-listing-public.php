@@ -40,6 +40,8 @@ class Circolo_Listing_Public {
 	 */
 	private $version;
 
+	private  $should_track_pageview ;
+
 	/**
 	 * Initialize the class and set its properties.
 	 *
@@ -53,6 +55,11 @@ class Circolo_Listing_Public {
 		$this->version = $version;
 
 	}
+
+	public function init()
+    {
+        Circolo_Listing_Shortcodes::register_shortcodes();
+    }
 
 	/**
 	 * Register the stylesheets for the public-facing side of the site.
@@ -99,5 +106,19 @@ class Circolo_Listing_Public {
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/circolo-listing-public.js', array( 'jquery' ), $this->version, false );
 
 	}
+
+	
+
+	/**
+     * @return bool
+     */
+    protected function is_admin() : bool
+    {
+        $current_user = wp_get_current_user();
+        if ( user_can( $current_user, 'administrator' ) ) {
+            return true;
+        }
+        return false;
+    }
 
 }

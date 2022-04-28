@@ -36,6 +36,13 @@ if ( ! defined( 'WPINC' ) ) {
  * Rename this for your plugin and update it as you release new versions.
  */
 define( 'CIRCOLO_LISTING_VERSION', '1.0.0' );
+define( 'CIRCOLO_LISTING_SLUG', 'circolo_listing' );
+define( 'CIRCOLO_LISTING_PLUGIN_NAME', 'circolo-listing' );
+define( 'CIRCOLO_LISTING_NAME', 'Circolo Listing' );
+define( 'CIRCOLO_LISTING_TEMPLATE_PATH', 'circolo-listing/' );
+define( 'CIRCOLO_LISTING_PATH', plugin_dir_path( __FILE__ ) );
+define( 'CIRCOLO_LISTING_URL', plugin_dir_url( __FILE__ ) );
+define( 'CIRCOLO_LISTING_BASENAME', plugin_basename( __FILE__ ) );
 
 /**
  * The code that runs during plugin activation.
@@ -63,6 +70,7 @@ register_deactivation_hook( __FILE__, 'deactivate_circolo_listing' );
  * admin-specific hooks, and public-facing site hooks.
  */
 require plugin_dir_path( __FILE__ ) . 'includes/class-circolo-listing.php';
+require plugin_dir_path( __FILE__ ) . 'vendor/autoload.php';
 
 /**
  * Begins execution of the plugin.

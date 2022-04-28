@@ -155,13 +155,13 @@ class Circolo_Listing_Admin {
 		$screens = [ 'circolo_listings' ];
 		foreach ( $screens as $screen ) {
 			add_meta_box(
-				'circolo_listing_product',                 // Unique ID
+				CIRCOLO_LISTING_SLUG . '_product_id',                 // Unique ID
 				'Post Type',      // Box title
 				array($this, 'post_type_box_html'),  // Content callback, must be of type callable
 				$screen                            // Post type
 			);
 			add_meta_box(
-				'circolo_listing_order',                 // Unique ID
+				CIRCOLO_LISTING_SLUG . '_order_id',                 // Unique ID
 				'Order',      // Box title
 				array($this, 'custom_box_html'),  // Content callback, must be of type callable
 				$screen                            // Post type
@@ -171,7 +171,7 @@ class Circolo_Listing_Admin {
 
 	public function post_type_box_html() {
 		global $post;
-		$value = get_post_meta( $post->ID, 'circolo_listing_product', true );
+		$value = get_post_meta( $post->ID, CIRCOLO_LISTING_SLUG . '_product_id', true );
 		// Use nonce for verification to secure data sending
 		wp_nonce_field( basename( __FILE__ ), 'circolo_nonce' );
 
@@ -185,7 +185,7 @@ class Circolo_Listing_Admin {
 
 	public function custom_box_html() {
 		global $post;
-		$value = get_post_meta( $post->ID, 'circolo_listing_order', true );
+		$value = get_post_meta( $post->ID, CIRCOLO_LISTING_SLUG . '_order_id', true );
 		// Use nonce for verification to secure data sending
 		wp_nonce_field( basename( __FILE__ ), 'circolo_nonce' );
 
