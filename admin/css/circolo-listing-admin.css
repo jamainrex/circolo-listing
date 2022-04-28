@@ -2,3 +2,19 @@
  * All of the CSS for your admin-specific functionality should be
  * included in this file.
  */
+ .toplevel_page_plugin-name .wp-menu-image img{
+	height:20px;
+	width:20px;
+}
+
+.date_range_field {
+	display: inline-block;
+}
+
+#listing_number_of {
+	width: 30%;
+}
+
+#listing_by {
+	width: 50%;
+}

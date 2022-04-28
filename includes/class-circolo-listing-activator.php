@@ -31,6 +31,13 @@ class Circolo_Listing_Activator {
 	 */
 	public static function activate() {
 
+
+		if ( !class_exists( 'WooCommerce' ) ) {
+            deactivate_plugins( plugin_basename( __FILE__ ) );
+            wp_die( esc_html__( 'Please install and Activate WooCommerce.', 'circolo_listings' ), 'Plugin dependency check', array(
+                'back_link' => true,
+            ) );
+        }
 	}
 
 }

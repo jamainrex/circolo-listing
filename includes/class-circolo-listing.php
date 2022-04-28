@@ -78,6 +78,7 @@ class Circolo_Listing {
 		$this->set_locale();
 		$this->define_admin_hooks();
 		$this->define_public_hooks();
+		$this->define_woocommerce_hooks();
 
 	}
 
@@ -122,6 +123,18 @@ class Circolo_Listing {
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-circolo-listing-public.php';
 
+		/**
+		 * The class responsible for defining all actions that occur in the WooCommerce Integration
+		 * side of the site.
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'integrations/class-circolo-listing-woocommerce.php';
+
+		/**
+		 * The class responsible for defining all custom Templates
+		 * side of the site.
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-circolo-listing-templater.php';
+
 		$this->loader = new Circolo_Listing_Loader();
 
 	}
@@ -154,9 +167,15 @@ class Circolo_Listing {
 
 		$plugin_admin = new Circolo_Listing_Admin( $this->get_plugin_name(), $this->get_version() );
 
+		$this->loader->add_action( 'init', $plugin_admin, 'register_custom_post_types');
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
+		$this->loader->add_action( 'admin_menu', $plugin_admin, 'addPluginAdminMenu', 9);
+		$this->loader->add_action( 'add_meta_boxes', $plugin_admin, 'add_custom_box');
+		$this->loader->add_action( 'save_post', $plugin_admin, 'save_meta_fields' );
+		$this->loader->add_action( 'new_to_publish', $plugin_admin, 'save_meta_fields' );
 
+		//$this->loader->add_action( 'plugins_loaded', Circolo_Listing_PageTemplater::class, 'get_instance' );
 	}
 
 	/**
@@ -173,6 +192,16 @@ class Circolo_Listing {
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 
+	}
+
+	private function define_woocommerce_hooks() {
+		$plugin_wc = new Circolo_Listing_WooCommerce( $this->get_plugin_name(), $this->get_version() );
+
+		$this->loader->add_action( 'add_meta_boxes', $plugin_wc, 'order_add_meta_boxes' );
+		$this->loader->add_action( 'woocommerce_product_options_general_product_data', $plugin_wc, 'product_date_range' );
+		//$this->loader->add_filter( 'woocommerce_product_data_tabs', $plugin_admin, 'wc_new_product_tab' );
+	
+		$this->loader->add_filter( 'woocommerce_add_to_cart_validation', $plugin_wc, 'limit_one_per_order', 10, 2 );
 	}
 
 	/**
