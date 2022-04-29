@@ -118,7 +118,7 @@ class Circolo_Listing_Admin {
 							'menu_name' => 'Listings',
 							'name_admin_bar'     => 'Listings',
 						),
-					'public'			  =>false,
+					'public'			  => true,
 					'rewrite' 			  => array('slug' => 'listings'),
 					'hierarchical'        => false,
         			'show_ui'             => true,
@@ -160,27 +160,23 @@ class Circolo_Listing_Admin {
 				array($this, 'post_type_box_html'),  // Content callback, must be of type callable
 				$screen                            // Post type
 			);
-			add_meta_box(
-				CIRCOLO_LISTING_SLUG . '_order_id',                 // Unique ID
-				'Order',      // Box title
-				array($this, 'custom_box_html'),  // Content callback, must be of type callable
-				$screen                            // Post type
-			);
+			// add_meta_box(
+			// 	CIRCOLO_LISTING_SLUG . '_order_id',                 // Unique ID
+			// 	'Order',      // Box title
+			// 	array($this, 'custom_box_html'),  // Content callback, must be of type callable
+			// 	$screen                            // Post type
+			// );
 		}
 	}
 
 	public function post_type_box_html() {
-		global $post;
-		$value = get_post_meta( $post->ID, CIRCOLO_LISTING_SLUG . '_product_id', true );
-		// Use nonce for verification to secure data sending
-		wp_nonce_field( basename( __FILE__ ), 'circolo_nonce' );
-
-		?>
-
-		<!-- my custom value input -->
-		<input type="number" min="0" name="circolo_listing_product_value" value="<?php echo $value ?>">
-
-		<?php
+		ob_start();
+        global  $post ;
+        $id = $post->ID;
+		$selected = get_post_meta( $id, CIRCOLO_LISTING_SLUG . '_product_id', true );
+		$drop_down = $this->generate_products_dropdown( $selected );
+		require plugin_dir_path( dirname( __FILE__ ) ) . 'admin/partials/meta-box-base.php';
+        echo  ob_get_clean();
 	}
 
 	public function custom_box_html() {
@@ -238,5 +234,56 @@ class Circolo_Listing_Admin {
 		}
 
 		
+	  }
+
+	  protected function get_post_products_custom_field( $value, $id = null )
+	  {
+		  $custom_field = get_post_meta( $id, $value, true );
+		  
+		  if ( !empty($custom_field) ) {
+			  return ( is_array( $custom_field ) ? stripslashes_deep( $custom_field ) : stripslashes( wp_kses_decode_entities( $custom_field ) ) );
+		  } else {
+			  return false;
+		  }
+	  
+	  }
+	  
+	  protected function generate_products_dropdown( $selected = array() ) : string
+	  {
+		  $products = Circolo_Listing_Helper::get_products();
+		  $drop_down = '<select id="' . CIRCOLO_LISTING_SLUG . '_product_id" name="' . CIRCOLO_LISTING_SLUG . '_product_id" style="width: 100%">';
+		  $drop_down .= '<optgroup label="Products">';
+		  foreach ( $products as $product ) {
+			  $drop_down .= '<option value="' . $product['ID'] . '"';
+			  if ( (int) $product['ID'] === (int) $selected ) {
+				  $drop_down .= ' selected="selected"';
+			  }
+			  $drop_down .= '>' . $product['post_title'] . ' - [#' . $product['ID'] . ']</option>';
+		  }
+		  $drop_down .= '</optgroup>';
+		  $drop_down .= '</select>';
+		  return $drop_down;
+	  }
+	  
+	  /**
+	   * @param $product_ids
+	   *
+	   * @return array|string
+	   */
+	  private function sanitize_product_ids( $product_ids )
+	  {
+		  
+		  if ( is_array( $product_ids ) ) {
+			  $return = [];
+		  } else {
+			  return '';
+		  }
+		  
+		  foreach ( $product_ids as $key => $product_id ) {
+			  if ( is_numeric( $product_id ) ) {
+				  $return[] = $product_id;
+			  }
+		  }
+		  return $return;
 	  }
 }

@@ -1,6 +1,7 @@
 <?php
 
 use  Carbon\Carbon;
+use CIRCOLO\Circolo_Listing_Restrict_Content;
 
 class Circolo_Listing_Helper extends Circolo_Listing
 {
@@ -181,7 +182,7 @@ class Circolo_Listing_Helper extends Circolo_Listing
             'post_type'   => $custom_post_types,
         ];
         $args['meta_query'] = [ [
-            'key'     => WC_PPP_SLUG . '_product_ids',
+            'key'     => CIRCOLO_LISTING_SLUG . '_product_id',
             'value'   => sprintf( '^%1$s$|s:%2$u:"%1$s";', $product_id, strlen( $product_id ) ),
             'compare' => 'REGEXP',
         ] ];
@@ -194,9 +195,6 @@ class Circolo_Listing_Helper extends Circolo_Listing
                 case "default":
                 default:
                     $protected_content = self::get_posts_associated_with_product_id_interface( $posts );
-                    break;
-                case "polylang":
-                    $protected_content = self::get_posts_associated_with_product_id_interface_polylang__premium_only( $posts );
                     break;
             }
         }
@@ -284,6 +282,31 @@ class Circolo_Listing_Helper extends Circolo_Listing
         }
         return $return;
     }
+
+    public static function get_all_categories() : array
+    {
+        $taxonomy     = 'product_cat';
+        $orderby      = 'name';  
+        $show_count   = 0;      // 1 for yes, 0 for no
+        $pad_counts   = 0;      // 1 for yes, 0 for no
+        $hierarchical = 1;      // 1 for yes, 0 for no  
+        $title        = '';  
+        $empty        = 0;
+
+        $args = array(
+                'taxonomy'     => $taxonomy,
+                'orderby'      => $orderby,
+                'show_count'   => $show_count,
+                'pad_counts'   => $pad_counts,
+                'hierarchical' => $hierarchical,
+                'title_li'     => $title,
+                'hide_empty'   => $empty
+        );
+        $all_categories = get_categories( $args );
+
+        echo '<pre>'.print_r($all_categories, true).'</pre>';
+        return $all_categories;
+    }
     
     public static function get_virtual_products() : array
     {
@@ -319,8 +342,10 @@ class Circolo_Listing_Helper extends Circolo_Listing
         ],
         ];
         $products = get_posts( apply_filters( 'wc_circolo_listing_virtual_product_args', $args ) );
+        //echo '<pre>'.print_r($products, true).'</pre>';
         $return = [];
         foreach ( $products as $product ) {
+            
             $return[] = [
                 'ID'         => $product->ID,
                 'post_title' => $product->post_title,
@@ -331,13 +356,16 @@ class Circolo_Listing_Helper extends Circolo_Listing
     
     public static function get_products()
     {
-        $only_show_virtual_products = (bool) get_option( CIRCOLO_LISTING_SLUG . '_only_show_virtual_products', false );
+        //Circolo_Listing_Helper::get_all_categories();
+        return apply_filters( 'wc_circolo_listing_get_virtual_products', Circolo_Listing_Helper::get_virtual_products() );
         
-        if ( $only_show_virtual_products ) {
-            return apply_filters( 'wc_pay_per_post_get_virtual_products', Woocommerce_Pay_Per_Post_Helper::get_virtual_products() );
-        } else {
-            return apply_filters( 'wc_pay_per_post_get_all_products', Woocommerce_Pay_Per_Post_Helper::get_all_products() );
-        }
+        // $only_show_virtual_products = (bool) get_option( CIRCOLO_LISTING_SLUG . '_only_show_virtual_products', false );
+        
+        // if ( $only_show_virtual_products ) {
+        //     return apply_filters( 'wc_circolo_listing_get_virtual_products', Woocommerce_Pay_Per_Post_Helper::get_virtual_products() );
+        // } else {
+        //     return apply_filters( 'wc_circolo_listing_get_all_products', Woocommerce_Pay_Per_Post_Helper::get_all_products() );
+        // }
     
     }
     
@@ -350,7 +378,8 @@ class Circolo_Listing_Helper extends Circolo_Listing
         }
         if ( is_archive() || is_home() || is_front_page() ) {
             //Get Product IDs
-            $product_ids = get_post_meta( get_the_ID(), CIRCOLO_LISTING_SLUG . '_product_ids', true );
+            $product_id = get_post_meta( get_the_ID(), CIRCOLO_LISTING_SLUG . '_product_id', true );
+            $product_ids = [ $product_id ];
         }
         $return_content = str_replace( '{{product_id}}', implode( ',', (array) $product_ids ), $paywall_content );
         $return_content = str_replace( '{{parent_id}}', $parent_id, $return_content );

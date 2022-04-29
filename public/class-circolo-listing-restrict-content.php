@@ -1,6 +1,9 @@
 <?php
 
+namespace CIRCOLO;
+
 use  Carbon\CarbonInterface ;
+use Circolo_Listing_Helper;
 
 class Circolo_Listing_Restrict_Content
 {
@@ -133,9 +136,9 @@ class Circolo_Listing_Restrict_Content
                 // Since we already check to see if they purchased the product standard protection returns true all the time.
                 // Since we already check to see if they purchased the product standard protection returns true all the time.
             case 'page-view':
-                return $this->has_access_page_view_protection__premium_only();
+                return true;//$this->has_access_page_view_protection__premium_only();
             case 'expire':
-                return $this->has_access_expiry_protection__premium_only();
+                return true;//$this->has_access_expiry_protection__premium_only();
         }
         return true;
     }
@@ -166,7 +169,15 @@ class Circolo_Listing_Restrict_Content
         foreach ( (array) $this->protection_checks as $check ) {
             $check_results[$check] = $this->{$check}();
         }
-        if ( $check_results['check_if_owner_user'] || $check_results['check_if_admin_call'] || !$check_results['check_if_protected'] || !$check_results['check_if_should_show_paywall'] || $check_results['check_if_admin_user_have_access'] || $check_results['check_if_user_role_has_access'] || $check_results['check_if_has_access'] ) {
+        if ( 
+            $check_results['check_if_owner_user'] || 
+            $check_results['check_if_admin_call'] || 
+            !$check_results['check_if_protected'] || 
+            !$check_results['check_if_should_show_paywall'] || 
+            $check_results['check_if_admin_user_have_access'] || 
+            $check_results['check_if_user_role_has_access'] || 
+            $check_results['check_if_has_access'] 
+            ) {
             return false;
         }
         
@@ -229,7 +240,7 @@ class Circolo_Listing_Restrict_Content
     
     public function is_expired( $post_id ) : bool
     {
-        return !$this->has_access_expiry_protection__premium_only( $post_id );
+        return false;//!$this->has_access_expiry_protection__premium_only( $post_id );
     }
     
     public function process_status_shortcode( $atts )
@@ -325,7 +336,7 @@ class Circolo_Listing_Restrict_Content
         if ( !is_null( $user_info['last_purchase_date'] ) ) {
             ob_start();
             /** @noinspection PhpIncludeInspection */
-            require Circolo_Listing_Helper::locate_template( $this->available_templates[$template], '', WC_PPP_PATH . 'public/partials/' );
+            require Circolo_Listing_Helper::locate_template( $this->available_templates[$template], '', CIRCOLO_LISTING_SLUG . 'public/partials/' );
             return ob_get_clean();
         }
         

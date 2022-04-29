@@ -1,6 +1,6 @@
 <?php
 
-require_once plugin_dir_path( __FILE__ ) . 'includes/class-circolo-listing-helper.php';
+use CIRCOLO\Circolo_Listing_Restrict_Content;
 
 class Circolo_Listing_Shortcodes
 {
