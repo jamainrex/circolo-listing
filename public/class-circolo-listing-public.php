@@ -159,14 +159,21 @@ class Circolo_Listing_Public {
 		global $wp_query;
 		//ensure that our filter only runs one time
         if ( in_array( get_post_type(), Circolo_Listing_Helper::get_post_types() ) ) {
+
             $restrict = new Circolo_Listing_Restrict_Content();
+
+			if( !$restrict->check_if_logged_in() ){
+				wp_redirect( 'home');
+				exit();
+			}
+
 			$has_access = apply_filters( 'wc_circolo_listing_force_bypass_paywall', $restrict->can_user_view_content() );
-			// if ( $has_access == false ) {
-			// 	$wp_query->set_404();
-			// 	status_header( 404 );
-			// 	get_template_part( 404 );
-			// 	exit();
-			// }
+			if ( $has_access == false ) {
+				$wp_query->set_404();
+				status_header( 404 );
+				get_template_part( 404 );
+				exit();
+			}
         }
 
         
