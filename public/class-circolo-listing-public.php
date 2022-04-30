@@ -1,5 +1,7 @@
 <?php
 
+use CIRCOLO\Circolo_Listing_Restrict_Content;
+
 /**
  * The public-facing functionality of the plugin.
  *
@@ -107,7 +109,83 @@ class Circolo_Listing_Public {
 
 	}
 
-	
+	/**
+     * @param $unfiltered_content
+     *
+     * @return string
+     */
+    public function restrict_content( $unfiltered_content ) : string
+    {
+        //ensure that our filter only runs one time
+        if ( !in_the_loop() && !is_singular() && !is_main_query() && in_array( get_post_type(), Circolo_Listing_Helper::get_post_types() ) ) {
+            //echo '<pre>'.print_r('Here!', true).'</pre>';
+			return $unfiltered_content;
+        }
+        
+        if ( !Circolo_Listing_Helper::is_protected() ) {
+			//echo '<pre>'.print_r('Here2!', true).'</pre>';
+            return $unfiltered_content;
+        }
+        
+        //check and see if inline shortcode exists, if it does skip
+        
+        if ( strpos( $unfiltered_content, '[/wc-circolo-listing-inline]' ) ) {
+            // Handle shortcode access
+            return $unfiltered_content;
+        } elseif ( strpos( $unfiltered_content, '[products ids=' ) ) {
+            //check and see if the products shortcode exists, if it does skip.  This is to account for Elementor Elements being protected
+            return $unfiltered_content;
+        } else {
+            $restrict = new Circolo_Listing_Restrict_Content();
+            $show_paywall = apply_filters( 'wc_circolo_listing_force_bypass_paywall', $restrict->can_user_view_content() );
+			//var_dump( $show_paywall );
+            if ( $show_paywall == false ) {
+                return $restrict->show_content( $unfiltered_content );
+            }
+            remove_filter( current_filter(), __FUNCTION__ );
+            return $restrict->show_paywall( $unfiltered_content );
+        }
+    
+    }
+
+	public function set_product_ids()
+    {
+        global $product_id;
+        $product_id = get_post_meta( get_the_ID(), CIRCOLO_LISTING_SLUG . '_product_id', true );
+    }
+
+	public function restrict_listing()
+    {
+		global $wp_query;
+		//ensure that our filter only runs one time
+        if ( in_array( get_post_type(), Circolo_Listing_Helper::get_post_types() ) ) {
+            $restrict = new Circolo_Listing_Restrict_Content();
+			$has_access = apply_filters( 'wc_circolo_listing_force_bypass_paywall', $restrict->can_user_view_content() );
+			// if ( $has_access == false ) {
+			// 	$wp_query->set_404();
+			// 	status_header( 404 );
+			// 	get_template_part( 404 );
+			// 	exit();
+			// }
+        }
+
+        
+    }
+
+	public function should_disable_comments()
+    {
+        $is_protected = Circolo_Listing_Helper::is_protected( get_the_ID() );
+        
+        if ( $is_protected ) {
+            add_filter( 'comments_open', function () {
+                return false;
+            } );
+            add_filter( 'get_comments_number', function () {
+                return 0;
+            } );
+        }
+    
+    }
 
 	/**
      * @return bool

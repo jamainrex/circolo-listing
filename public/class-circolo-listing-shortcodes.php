@@ -8,6 +8,8 @@ class Circolo_Listing_Shortcodes
     {
         add_shortcode( 'woocommerce-circolo-listing', [ __CLASS__, 'process_shortcode' ] );
         add_shortcode( 'wc-circolo-listing', [ __CLASS__, 'process_shortcode' ] );
+        $restrict = new Circolo_Listing_Restrict_Content();
+        $restrict->register_shortcodes();
     }
     
     public static function process_shortcode( $atts )

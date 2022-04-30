@@ -160,12 +160,12 @@ class Circolo_Listing_Admin {
 				array($this, 'post_type_box_html'),  // Content callback, must be of type callable
 				$screen                            // Post type
 			);
-			// add_meta_box(
-			// 	CIRCOLO_LISTING_SLUG . '_order_id',                 // Unique ID
-			// 	'Order',      // Box title
-			// 	array($this, 'custom_box_html'),  // Content callback, must be of type callable
-			// 	$screen                            // Post type
-			// );
+			add_meta_box(
+				CIRCOLO_LISTING_SLUG . '_order_id',                 // Unique ID
+				'Order',      // Box title
+				array($this, 'custom_box_html'),  // Content callback, must be of type callable
+				$screen                            // Post type
+			);
 		}
 	}
 
@@ -174,6 +174,7 @@ class Circolo_Listing_Admin {
         global  $post ;
         $id = $post->ID;
 		$selected = get_post_meta( $id, CIRCOLO_LISTING_SLUG . '_product_id', true );
+		//echo '<pre>'.print_r([$post->ID, $selected], true).'</pre>';
 		$drop_down = $this->generate_products_dropdown( $selected );
 		require plugin_dir_path( dirname( __FILE__ ) ) . 'admin/partials/meta-box-base.php';
         echo  ob_get_clean();
@@ -186,16 +187,16 @@ class Circolo_Listing_Admin {
 		wp_nonce_field( basename( __FILE__ ), 'circolo_nonce' );
 
 		$wp_orders = wc_get_orders(array());
-		echo '<pre>'.print_r($wp_orders, true).'</pre>';
+		//echo '<pre>'.print_r($wp_orders, true).'</pre>';
 		?>
 
 		<!-- my custom value input -->
-		<input type="number" min="0" name="circolo_listing_order_value" value="<?php echo $value ?>">
+		<input type="number" min="0" name="<?php echo CIRCOLO_LISTING_SLUG . '_order_id' ?>" value="<?php echo $value ?>">
 
 		<?php
 	}
 
-	function save_meta_fields( $post_id ) {
+	public function save_meta_fields( $post_id ) {
 
 		// verify nonce
 		if (!isset($_POST['circolo_nonce']) || !wp_verify_nonce($_POST['circolo_nonce'], basename(__FILE__)))
@@ -216,23 +217,22 @@ class Circolo_Listing_Admin {
 			} elseif ( ! current_user_can( 'edit_post', $post_id ) ) {
 				return 'cannot edit post';
 		}
-	  
-		if ( array_key_exists( 'circolo_listing_order_value', $_POST ) ) {
+
+		if ( array_key_exists( 'circolo_listing_product_id', $_POST ) ) {
 			update_post_meta(
 				$post_id,
-				'circolo_listing_order',
-				$_POST['circolo_listing_order_value']
+				'circolo_listing_product_id',
+				$_POST['circolo_listing_product_id']
 			);
 		}
 
-		if ( array_key_exists( 'circolo_listing_product_value', $_POST ) ) {
+		if ( array_key_exists( 'circolo_listing_order_id', $_POST ) ) {
 			update_post_meta(
 				$post_id,
-				'circolo_listing_product',
-				$_POST['circolo_listing_product_value']
+				'circolo_listing_order_id',
+				$_POST['circolo_listing_order_id']
 			);
 		}
-
 		
 	  }
 
@@ -286,4 +286,30 @@ class Circolo_Listing_Admin {
 		  }
 		  return $return;
 	  }
+
+	public function widget_area() {
+			register_sidebar(
+				array(
+					'id' => 'circolo-listing-sidebar',
+					'name' => esc_html__( 'Listing Sidebar', 'circolo_listings' ),
+					'description' => esc_html__( 'Individual Listing Sidebar Contet', 'circolo_listings' ),
+					'before_widget' => '<div id="%1$s" class="widget %2$s">',
+					'after_widget' => '</div>',
+					'before_title' => '<div class="widget-title-holder"><h3 class="widget-title">',
+					'after_title' => '</h3></div>'
+				)
+			);
+
+			register_sidebar(
+				array(
+					'id' => 'circolo-listing-footer',
+					'name' => esc_html__( 'Listing Footer', 'circolo_listings' ),
+					'description' => esc_html__( 'Individual Listing Footer Content', 'circolo_listings' ),
+					'before_widget' => '<div id="%1$s" class="widget %2$s">',
+					'after_widget' => '</div>',
+					'before_title' => '<div class="widget-title-holder"><h3 class="widget-title">',
+					'after_title' => '</h3></div>'
+				)
+			);
+	}
 }

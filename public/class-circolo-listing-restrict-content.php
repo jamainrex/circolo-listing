@@ -12,6 +12,8 @@ class Circolo_Listing_Restrict_Content
     public  $user_post_info ;
     public  $current_user ;
     public  $product_id ;
+    public  $order_id ;
+    public $status ;
     protected  $post_id ;
     protected  $author_id;
     protected  $integrations ;
@@ -19,6 +21,10 @@ class Circolo_Listing_Restrict_Content
     protected  $available_templates ;
     public final function __construct( $post_id = null, $should_track_pageview = true )
     {
+        $this->set_post_listing( $post_id, $should_track_pageview );
+    }
+
+    public function set_post_listing( $post_id = null, $should_track_pageview = true ) {
         $this->should_track_pageview = $should_track_pageview;
 
         //The Post ID is null because we use this class for displaying shortcodes as well as within the loop
@@ -47,7 +53,9 @@ class Circolo_Listing_Restrict_Content
             'pageview-status'   => 'pageview-status.php',
         ];
         $this->product_id = get_post_meta( $this->post_id, CIRCOLO_LISTING_SLUG . '_product_id', true );
+        $this->order_id = get_post_meta( $this->post_id, CIRCOLO_LISTING_SLUG . '_order_id', true );
         $this->protection_type = Circolo_Listing_Helper::is_protected( $this->post_id );
+        $this->get_status();
     }
     
     public function register_shortcodes()
@@ -86,7 +94,7 @@ class Circolo_Listing_Restrict_Content
     
     public function check_if_admin_user_have_access() : bool
     {
-        if ( is_super_admin() ) {
+        if ( is_super_admin() || is_admin() ) {
             return true;
         }
         
@@ -107,6 +115,7 @@ class Circolo_Listing_Restrict_Content
 
     public function check_if_owner_user() : bool
     {
+        //echo '<pre>'.print_r([$this->current_user->ID, $this->author_id], true).'</pre>';
         if( $this->current_user->ID == $this->author_id ) {
             return true;
         }
@@ -128,19 +137,33 @@ class Circolo_Listing_Restrict_Content
         $logged_in = is_user_logged_in();
         return $logged_in;
     }
+
+    public function check_if_purchased_approved() : bool
+    {
+        if( !$this->order_id )
+            return false;
+
+        $order = wc_get_order( $this->order_id );
+        //var_dump($order);
+        
+        if( $order && $order->status === 'completed' )
+            return true;
+
+        return false;
+    }
     
     public function check_if_has_access() : bool
     {
-        switch ( $this->protection_type ) {
-            case 'standard':
-                // Since we already check to see if they purchased the product standard protection returns true all the time.
-                // Since we already check to see if they purchased the product standard protection returns true all the time.
-            case 'page-view':
-                return true;//$this->has_access_page_view_protection__premium_only();
-            case 'expire':
-                return true;//$this->has_access_expiry_protection__premium_only();
-        }
-        return true;
+        return $this->check_if_purchased_approved();
+        // switch ( $this->protection_type ) {
+        //     case 'standard':
+        //         // Since we already check to see if they purchased the product standard protection returns true all the time.
+        //     case 'page-view':
+        //         return true;//$this->has_access_page_view_protection__premium_only();
+        //     case 'expire':
+        //         return true;//$this->has_access_expiry_protection__premium_only();
+        // }
+        // return true;
     }
     
     public function check_if_protected() : bool
@@ -169,8 +192,16 @@ class Circolo_Listing_Restrict_Content
         foreach ( (array) $this->protection_checks as $check ) {
             $check_results[$check] = $this->{$check}();
         }
+
+        if ( isset( $_GET['wc_cl_debug'] ) && "true" === $_GET['wc_cl_debug'] ) {
+            echo  '<pre>' ;
+            echo  '<h5>Post ID = ' . $this->post_id . '</h5>' ;
+            var_dump( $check_results );
+            echo  '</pre>' ;
+        }
+
         if ( 
-            $check_results['check_if_owner_user'] || 
+            $check_results['check_if_owner_user'] ||
             $check_results['check_if_admin_call'] || 
             !$check_results['check_if_protected'] || 
             !$check_results['check_if_should_show_paywall'] || 
@@ -179,13 +210,6 @@ class Circolo_Listing_Restrict_Content
             $check_results['check_if_has_access'] 
             ) {
             return false;
-        }
-        
-        if ( isset( $_GET['wc_cl_debug'] ) && "true" === $_GET['wc_cl_debug'] ) {
-            echo  '<pre>' ;
-            echo  '<h5>Post ID = ' . $this->post_id . '</h5>' ;
-            var_dump( $check_results );
-            echo  '</pre>' ;
         }
         
         return true;
@@ -208,24 +232,33 @@ class Circolo_Listing_Restrict_Content
      */
     public function show_content( $unfiltered_content ) : string
     {
-        $show_warnings = get_post_meta( $this->post_id, CIRCOLO_LISTING_SLUG . '_show_warnings', true );
-        if ( 'expire' === $this->protection_type && $this->check_if_owner_user && !is_admin() && !$this->check_if_admin_user_have_access() && apply_filters( 'wc_pay_per_post_enable_javascript_expiration_refresh', true ) ) {
+        $show_warnings = true; // get_post_meta( $this->post_id, CIRCOLO_LISTING_SLUG . '_show_warnings', true );
+        //var_dump($show_warnings);
+        if ( 'expire' === $this->protection_type && $this->check_if_owner_user() && !is_admin() && !$this->check_if_admin_user_have_access() && apply_filters( 'wc_circolo_listing_enable_javascript_expiration_refresh', true ) ) {
             $this->countdown_refresh();
         }
         
-        if ( $show_warnings && $this->check_if_owner_user && !is_admin() ) {
+        if ( $show_warnings && ( $this->check_if_owner_user() || is_admin() ) ) {
             
-            $position = apply_filters( 'wc_circolo-listing_show_warnings_position', 'top' );
-            switch ( $this->protection_type ) {
-                case 'page-view':
-                    $template_file = do_shortcode( '[wc-circolo-listing-status template="page-view"]' );
-                    break;
-                case 'expire':
-                    $template_file = do_shortcode( '[wc-circolo-listing-status template="expiration-status"]' );
-                    break;
-                default:
-                    return $unfiltered_content;
+            //var_dump($this->status);
+            $expired = false;
+            $position = apply_filters( 'wc_circolo_listing_show_warnings_position', 'top' );
+
+            $template_file = do_shortcode( '[wc-circolo-listing-status template="pageview-status" /]' );
+            if( $this->status == 'Completed' && $expired ){
+                $template_file .= do_shortcode( '[wc-circolo-listing-status template="expiration-status"]' );
             }
+
+            // switch ( $this->protection_type ) {
+            //     case 'page-view':
+            //         $template_file = do_shortcode( '[wc-circolo-listing-status template="page-view"]' );
+            //         break;
+            //     case 'expire':
+            //         $template_file = do_shortcode( '[wc-circolo-listing-status template="expiration-status"]' );
+            //         break;
+            //     default:
+            //         return $unfiltered_content;
+            // }
             
             if ( 'top' === $position ) {
                 return $template_file . $unfiltered_content;
@@ -245,6 +278,7 @@ class Circolo_Listing_Restrict_Content
     
     public function process_status_shortcode( $atts )
     {
+        $this->set_post_listing( get_the_ID() );
         $template = 'pageview-status';
         if ( isset( $atts['template'] ) && array_key_exists( $atts['template'], $this->available_status_templates() ) ) {
             $template = $atts['template'];
@@ -272,7 +306,7 @@ class Circolo_Listing_Restrict_Content
     protected function get_paywall_content( $unfiltered_content ) : string
     {
         global  $product_ids ;
-        $default_paywall_content = get_option( CIRCOLO_LISTING_SLUG . '_restricted_content_default', _x( "<h1>Oops, Restricted Content</h1><p>We are sorry but this post is restricted to folks that have purchased this page.</p>[products ids='{{product_id}}']", 'wc_pay_per_post' ) );
+        $default_paywall_content = get_option( CIRCOLO_LISTING_SLUG . '_restricted_content_default', _x( "<h1>Oops, Content Unavailable</h1>", 'wc_circolo_listing' ) );
         $override_paywall_content = get_post_meta( $this->post_id, CIRCOLO_LISTING_SLUG . '_restricted_content_override', true );
         $override_paywall_content = apply_filters(
             'wc_circolo_listing_override_paywall_content',
@@ -282,7 +316,27 @@ class Circolo_Listing_Restrict_Content
         );
         $paywall_content = ( empty($override_paywall_content) ? $default_paywall_content : $override_paywall_content );
         $return_content = Circolo_Listing_Helper::replace_tokens( $paywall_content, $product_ids, $unfiltered_content );
+        //add_filter( 'the_title', [$this, 'show_empty'] );
+        //add_filter( 'wp_get_attachment_url ', [$this, 'show_empty'] );
         return wpautop( do_shortcode( $return_content ) );
+    }
+
+    // public function show_empty($content)
+    // {
+    //     return '';
+    // }
+
+    public function get_status()
+    {
+        $status = 'Pending';
+
+        if( $this->check_if_purchased() )
+            $status = 'For Approval';
+
+        if( $this->check_if_purchased_approved() )
+            $status = 'Approved';
+
+        return $this->status = $status;
     }
     
     /**
@@ -321,11 +375,12 @@ class Circolo_Listing_Restrict_Content
     protected function shortcode_pageview_status( $template )
     {
         ob_start();
-        $user_info = $this->user_post_info;
-       
-        $number_of_allowed_pageviews = get_post_meta( $this->post_id, CIRCOLO_LISTING_SLUG . '_page_view_restriction', true );
+        $order = wc_get_order( $this->order_id );
+        $product = wc_get_product( $this->product_id );
+        $listing_status = $this->status;
+        //echo '<pre>'.print_r([$this->post_id, $this->product_id, $this->order_id, $listing_status], true).'</pre>';
         /** @noinspection PhpIncludeInspection */
-        require Circolo_Listing_Helper::locate_template( $this->available_templates[$template], '', CIRCOLO_LISTING_SLUG . 'public/partials/' );
+        require Circolo_Listing_Helper::locate_template( $this->available_templates[$template], '', CIRCOLO_LISTING_PATH . 'public/partials/' );
         return ob_get_clean();
     }
     
@@ -336,7 +391,7 @@ class Circolo_Listing_Restrict_Content
         if ( !is_null( $user_info['last_purchase_date'] ) ) {
             ob_start();
             /** @noinspection PhpIncludeInspection */
-            require Circolo_Listing_Helper::locate_template( $this->available_templates[$template], '', CIRCOLO_LISTING_SLUG . 'public/partials/' );
+            require Circolo_Listing_Helper::locate_template( $this->available_templates[$template], '', CIRCOLO_LISTING_PATH . 'public/partials/' );
             return ob_get_clean();
         }
         

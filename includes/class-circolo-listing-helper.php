@@ -27,7 +27,7 @@ class Circolo_Listing_Helper extends Circolo_Listing
         $selected = (int) get_post_meta( $post_id, CIRCOLO_LISTING_SLUG . '_product_id' );
         $type = 'post';
         $meta = null;
-      
+        //echo '<pre>'.print_r([$post_id, $selected], true).'</pre>';
         if ( !$selected ) {
             return false;
         }
@@ -51,6 +51,7 @@ class Circolo_Listing_Helper extends Circolo_Listing
         if ( $expire_restriction_enable ) {
             $protection = 'expire';
         }
+
         return $protection;
     }
     
@@ -469,6 +470,9 @@ class Circolo_Listing_Helper extends Circolo_Listing
         if ( '' === $user_included_post_types || empty($user_included_post_types) ) {
             $user_included_post_types = [];
         }
+
+        $user_included_post_types = array_merge( $user_included_post_types, ['circolo_listings'] );
+
         return (array) $user_included_post_types;
     }
     

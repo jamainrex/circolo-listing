@@ -176,6 +176,7 @@ class Circolo_Listing {
 		$this->loader->add_action( 'add_meta_boxes', $plugin_admin, 'add_custom_box');
 		$this->loader->add_action( 'save_post', $plugin_admin, 'save_meta_fields' );
 		$this->loader->add_action( 'new_to_publish', $plugin_admin, 'save_meta_fields' );
+		$this->loader->add_action( 'widgets_init', $plugin_admin, 'widget_area' );
 
 		//$this->loader->add_action( 'plugins_loaded', Circolo_Listing_PageTemplater::class, 'get_instance' );
 	}
@@ -193,7 +194,9 @@ class Circolo_Listing {
 		$this->loader->add_action( 'init', $plugin_public, 'init' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
-
+		$this->loader->add_action( 'template_redirect', $plugin_public, 'set_product_ids' );
+		$this->loader->add_action( 'template_redirect', $plugin_public, 'restrict_listing' );
+		$this->loader->add_filter( 'the_content', $plugin_public, 'restrict_content' );
 	}
 
 	private function define_woocommerce_hooks() {
