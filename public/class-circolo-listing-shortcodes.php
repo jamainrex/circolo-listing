@@ -173,7 +173,9 @@ class Circolo_Listing_Shortcodes
         extract(shortcode_atts(array(
             'category'  => empty( $_GET['category'] ) ? '' : wc_clean( wp_unslash( $_GET['category'] ) )
         ), $atts));
-    
+
+        wp_enqueue_script( CIRCOLO_LISTING_PLUGIN_NAME . '-category-products-js', plugin_dir_url( __FILE__ ) . 'js/circolo-listing-products.js', array( 'jquery' ), CIRCOLO_LISTING_VERSION, false );
+
         ob_start();
     
         $products = Circolo_Listing_Helper::get_category_products( $category ); // new WP_Query( $args );
