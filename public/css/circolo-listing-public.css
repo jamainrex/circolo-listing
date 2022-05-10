@@ -2,3 +2,27 @@
  * All of the CSS for your public-facing functionality should be
  * included in this file.
  */
+
+ .products_wrapper {
+     display: block;
+ }
+
+ .product-item {
+    width: 33%;
+    display: inline-block;
+    background-color: #fff;
+    padding: 25px;
+    margin: 10px;
+    text-align: center;
+ }
+
+ .btn-next {
+    font-family: "Be Vietnam", Sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    text-transform: uppercase;
+    background-color: #50563c;
+    border-radius: 0px 0px 0px 0px;
+    padding: 10px 40px 10px 40px;
+    text-align: center;
+ }

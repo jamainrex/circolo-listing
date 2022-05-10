@@ -284,6 +284,35 @@ class Circolo_Listing_Helper extends Circolo_Listing
         return $return;
     }
 
+    public static function get_category_products( $category = '' ) : array
+    {
+        if( isset( $_GET['category'] ) && is_numeric( $_GET['category'] ) )
+            $category = wc_clean( wp_unslash( $_GET['category'] ) );
+
+            $args = array(
+                'post_type' => 'product',
+                'post_status' => 'publish',
+                'ignore_sticky_posts'   => 1,
+                //'posts_per_page' => $per_page,
+                'orderby' => 'title',
+                'order' => 'ASC',
+                'tax_query'             => array(
+                    array(
+                        'taxonomy'      => 'product_cat',
+                        'terms'         => array( esc_attr($category) ),
+                        'field'         => 'id',
+                        'operator'      => 'IN'
+                    )
+                )
+            );
+
+            //echo '<pre>'.print_r($args, true).'</pre>';
+
+            $products = get_posts( apply_filters( 'wc_circolo_listing_all_product_args', $args ) );
+            
+            return $products;
+    }
+
     public static function get_all_categories() : array
     {
         $taxonomy     = 'product_cat';

@@ -100,6 +100,43 @@ class Circolo_Listing_Admin {
 
 	}
 
+
+	public function create_categories_taxonomy() {
+ 
+		// Labels part for the GUI
+		
+		$labels = array(
+			'name' => _x( 'Categories', 'taxonomy general name' ),
+			'singular_name' => _x( 'Category', 'taxonomy singular name' ),
+			'search_items' =>  __( 'Search Categories' ),
+			'popular_items' => __( 'Popular Categories' ),
+			'all_items' => __( 'All Categories' ),
+			'parent_item' => null,
+			'parent_item_colon' => null,
+			'edit_item' => __( 'Edit Category' ), 
+			'update_item' => __( 'Update Category' ),
+			'add_new_item' => __( 'Add New Category' ),
+			'new_item_name' => __( 'New Category Name' ),
+			'menu_name' => __( 'Categories' ),
+			'name_admin_bar'  => __( 'Categories' ),
+		); 
+		
+		// Now register the non-hierarchical taxonomy like tag
+		
+		register_taxonomy('listing_cat','circolo_listings',array(
+			'hierarchical' => false,
+			'labels' => $labels,
+			'show_ui' => true,
+			'show_in_rest' => true,
+			'show_admin_column' => true,
+			'show_in_menu' => $this->plugin_name,
+			'menu_position'       => 6,
+			'update_count_callback' => '_update_post_term_count',
+			'query_var' => true,
+			'rewrite' => array( 'slug' => 'category' ),
+		));
+	}
+
 	public function register_custom_post_types(){
 		$customPostTypeArgs = array(
 					'label'=>'Circolo Listings',
@@ -286,6 +323,25 @@ class Circolo_Listing_Admin {
 		  }
 		  return $return;
 	  }
+
+	function set_post_category( $post_id, $post, $update ) {
+		// Only want to set if this is a new post!
+		// if ( $update ){
+		// 	return;
+		// }
+		
+		// Only set for post_type = post!
+		if ( 'circolo_listings' !== $post->post_type ) {
+			return;
+		}
+
+		$product_id = get_post_meta( $post_id, CIRCOLO_LISTING_SLUG . '_product_id', true );
+		
+		// Get the default term using the slug, its more portable!
+		//$term = get_term_by( 'slug', 'my-custom-term', 'category' );
+	
+		//wp_set_post_terms( $post_id, $term->term_id, 'category', true );
+	}
 
 	public function widget_area() {
 			register_sidebar(

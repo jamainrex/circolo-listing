@@ -5,18 +5,11 @@ use CIRCOLO\Circolo_Listing_Restrict_Content;
 /**
  * The public-facing functionality of the plugin.
  *
- * @link       https://circolo.club
- * @since      1.0.0
- *
- * @package    Circolo_Listing
- * @subpackage Circolo_Listing/public
- */
-
-/**
- * The public-facing functionality of the plugin.
- *
  * Defines the plugin name, version, and two examples hooks for how to
  * enqueue the public-facing stylesheet and JavaScript.
+ * 
+ * @link       https://circolo.club
+ * @since      1.0.0
  *
  * @package    Circolo_Listing
  * @subpackage Circolo_Listing/public
@@ -169,10 +162,10 @@ class Circolo_Listing_Public {
 
 			$has_access = apply_filters( 'wc_circolo_listing_force_bypass_paywall', $restrict->can_user_view_content() );
 			if ( $has_access == false ) {
-				$wp_query->set_404();
-				status_header( 404 );
-				get_template_part( 404 );
-				exit();
+				// $wp_query->set_404();
+				// status_header( 404 );
+				// get_template_part( 404 );
+				// exit();
 			}
         }
 

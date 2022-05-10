@@ -8,6 +8,7 @@ class Circolo_Listing_Shortcodes
     {
         add_shortcode( 'woocommerce-circolo-listing', [ __CLASS__, 'process_shortcode' ] );
         add_shortcode( 'wc-circolo-listing', [ __CLASS__, 'process_shortcode' ] );
+        add_shortcode( 'wc-circolo-listing-category-products', [ __CLASS__, 'category_products' ] );
         $restrict = new Circolo_Listing_Restrict_Content();
         $restrict->register_shortcodes();
     }
@@ -163,6 +164,25 @@ class Circolo_Listing_Shortcodes
             'all'        => 'shortcode-all.php',
             'remaining'  => 'shortcode-remaining.php',
         ];
+    }
+
+    public function category_products( $atts ) {
+
+        global $woocommerce_loop;
+    
+        extract(shortcode_atts(array(
+            'category'  => empty( $_GET['category'] ) ? '' : wc_clean( wp_unslash( $_GET['category'] ) )
+        ), $atts));
+    
+        ob_start();
+    
+        $products = Circolo_Listing_Helper::get_category_products( $category ); // new WP_Query( $args );
+        
+        //echo '<pre>'.print_r($products, true).'</pre>';
+        require plugin_dir_path( dirname( __FILE__ ) ) . 'public/partials/shortcode-products.php';
+        wp_reset_postdata();
+    
+        return '<div class="woocommerce">' . ob_get_clean() . '</div>';
     }
 
 }
