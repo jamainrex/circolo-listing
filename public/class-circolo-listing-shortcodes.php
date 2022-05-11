@@ -180,7 +180,7 @@ class Circolo_Listing_Shortcodes
     
         $products = Circolo_Listing_Helper::get_category_products( $category ); // new WP_Query( $args );
         
-        //echo '<pre>'.print_r($products, true).'</pre>';
+        //echo '<pre>'.print_r($products[0]->getData(), true).'</pre>';
         require plugin_dir_path( dirname( __FILE__ ) ) . 'public/partials/shortcode-products.php';
         wp_reset_postdata();
     

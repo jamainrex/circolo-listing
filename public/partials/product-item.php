@@ -1,8 +1,8 @@
-<div class="product-item" id="product-<?php echo $product->ID ?>" product="<?php echo $product->ID ?>">
+<div class="product-item" id="product-<?php echo $product->get_id() ?>" product="<?php echo $product->get_id() ?>">
     <h5 class="product-title">
-        <?php echo $product->post_title ?>
+        <?php echo $product->get_name() ?>
     </h5>
     <div class="product-content">
-        <?php echo $product->post_excerpt ?>
+        <?php echo $product->get_short_description() ?>
     </div>
 </div>
