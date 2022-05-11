@@ -7,7 +7,7 @@
 <div class="product-item-price">
     <h6>QUOTE</h6>
     <h4 class="product-price">
-        
+        <?php echo get_woocommerce_currency_symbol() ?> <span class="product-price-text"></span>
     </h4>
     <div class="product-sub-content">
     The price for sending this posting is <span class="product-price-text"></span> Inc VAT.

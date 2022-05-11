@@ -11,9 +11,15 @@
 </div>
 
 	<div class="elementor-button-wrapper" style="text-align: center;">
-		<a href="#" style="background-color: #50563c;" class="elementor-button-link elementor-button elementor-size-sm" role="button" id="select-category-next-btn">
+		<a id="next-btn-selected-post-type" href="#" style="background-color: #50563c;" class="elementor-button-link elementor-button elementor-size-sm" role="button">
 		<span class="elementor-button-content-wrapper">
 			<span class="elementor-button-text">Next</span>
+		</span>
+		</a>
+
+		<a id="accept-proceed-selected-post-type" href="#" style="background-color: #50563c; display: none;" class="elementor-button-link elementor-button elementor-size-sm" role="button">
+		<span class="elementor-button-content-wrapper">
+			<span class="elementor-button-text">ACCEPT & PROCEED</span>
 		</span>
 		</a>
 	</div>

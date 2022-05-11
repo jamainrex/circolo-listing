@@ -31,3 +31,28 @@
  .product-selected {
    border: 1px solid;
 }
+
+#product_item_detail_wrapper {
+   display: block;
+   text-align: center;
+}
+
+.product-item-detail {
+   display: inline-block;
+    width: 33%;
+    background-color: #ffffff;
+    padding: 25px;
+    margin: 10px;
+    text-align: center;
+    margin-right: 0px;
+}
+
+.product-item-price {
+   display: inline-block;
+    width: 33%;
+    background-color: #6d6161;
+    padding: 25px;
+    margin: 10px;
+    text-align: center;
+    margin-left: 0px;
+}

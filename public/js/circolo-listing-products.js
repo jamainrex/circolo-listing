@@ -55,4 +55,33 @@
         selectedPostType = productId;
      });
 
+	 var selectPostType = function(productId) {
+		 var productEl = $('#product-'+productId);
+		 if( productEl.length == -1 )
+		 	return;
+
+		var name = productEl.data('name');
+		var desc = productEl.find('.product-content').text();
+		var price = productEl.data('price');
+
+		var detailEl = $('#product_item_detail_wrapper');
+		detailEl.find('.product-title').text(name),
+		detailEl.find('.product-content').text(desc),
+		detailEl.find('.product-price-text').text(price);
+		$('.product-item').hide();
+		detailEl.show();
+		$('#accept-proceed-selected-post-type').show();
+
+	 }
+
+	 $('#next-btn-selected-post-type').on('click', function(e){
+		 e.preventDefault();
+		if( selectedPostType == 0 )
+			alert("Please select Type of Post");
+		else{
+			selectPostType( selectedPostType );
+			$(this).hide();
+		}
+	 })
+
 })( jQuery );
