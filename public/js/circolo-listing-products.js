@@ -84,4 +84,45 @@
 		}
 	 })
 
+	//  Add to Cart JS
+	var addToCart = function(productId) {
+		var data = {
+            action: 'woocommerce_ajax_add_to_cart',
+            product_id: productId,
+        };
+
+		$.ajax({
+            type: 'post',
+            url: circolo_ajax.url,
+            data: data,
+            beforeSend: function (response) {
+				console.log("BeforeSend: ", response);
+            },
+            complete: function (response) {
+                console.log("Complete: ", response);
+            },
+            success: function (response) {
+				console.log("Success: ", response);
+				if(response.success) {
+					window.location.href = response.redirect_url;
+				}
+
+				if( response.error )
+					alert("Whoops something went wrong! Please Try again!");
+				
+                // if (response.error & response.product_url) {
+                //     window.location = response.product_url;
+                //     return;
+                // } else {
+                //     $(document.body).trigger('added_to_cart', [response.fragments, response.cart_hash, $thisbutton]);
+                // }
+            },
+        });
+	}
+
+	$('#accept-proceed-selected-post-type').on('click', function (e) {
+        e.preventDefault();
+		addToCart(selectedPostType);
+	});
+
 })( jQuery );

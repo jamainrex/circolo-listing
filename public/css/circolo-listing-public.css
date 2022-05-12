@@ -7,18 +7,28 @@
      display: block;
  }
 
+#product_items_wrapper {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-wrap: wrap;
+}
+
  .product-item {
-    width: 33%;
-    display: inline-block;
+    flex: 0 0 31.5%;
     background-color: #fff;
     padding: 25px;
     margin: 10px;
     text-align: center;
     cursor: pointer;
+	min-height: 174px;
+	display: flex;
+    flex-direction: column;
+    justify-content: center;
  }
 
  .btn-next {
-    font-family: "Be Vietnam", Sans-serif;
+    font-family: "Be Vietnam Pro", Sans-serif;
     font-size: 14px;
     font-weight: 500;
     text-transform: uppercase;
@@ -29,30 +39,75 @@
  }
 
  .product-selected {
-   border: 1px solid;
+   border: 3px solid #51563F;
 }
 
 #product_item_detail_wrapper {
-   display: block;
+   display: flex;
    text-align: center;
 }
 
-.product-item-detail {
-   display: inline-block;
-    width: 33%;
-    background-color: #ffffff;
-    padding: 25px;
-    margin: 10px;
+.product-item-detail, .product-item-price {
+   	display:flex;
+	justify-content:center;
+    padding: 25px 60px;
+    margin:0;
     text-align: center;
     margin-right: 0px;
+	min-height:228px;
+	flex: 0 0 50%;
+	flex-direction: column;
+}
+.product-item-detail {
+	background-color: #ffffff;
+}
+.product-item-price {
+    background-color: #DBDACF;
+}
+.product-item-detail h4, .product-item-price p, .product-item h3 {
+	font-family: "Be Vietnam Pro", Sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+	color: #50563C;
+	text-transform: uppercase;
+}
+.product-item-price p, .product-item-price h4 {
+	margin-bottom: 0;
+}
+.product-item-detail div, .product-item-price div, .product-content {
+	font-family: "Be Vietnam Pro", Sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+	color: #50563C;
+}
+.product-item-price h4 {
+	font-family: "Ogg", Sans-serif;
+	font-size: 30px;
+}
+.product-button-wrapper {
+	text-align: center;
+	margin-top: 50px;
+	display:block;
+}
+.next-button, .accept-button, .next-button:hover, .accept-button:hover {
+	font-family: "Be Vietnam", Sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    text-transform: uppercase;
+    background-color: #51563F;
+    border-radius: 0px 0px 0px 0px;
+    padding: 12px 32px 12px 32px;
+	color:#ffffff;
+}
+.accept-button {
+	display:none;
 }
 
-.product-item-price {
-   display: inline-block;
-    width: 33%;
-    background-color: #6d6161;
-    padding: 25px;
-    margin: 10px;
-    text-align: center;
-    margin-left: 0px;
+@media only screen and (max-width:480px) {
+	#product_items_wrapper, #product_item_detail_wrapper {
+		flex-direction: column;
+	}
+	.products_wrapper {
+		margin: 0 15px;
+	}
 }

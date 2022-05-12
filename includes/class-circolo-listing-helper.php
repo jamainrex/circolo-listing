@@ -202,6 +202,76 @@ class Circolo_Listing_Helper extends Circolo_Listing
         
         return $protected_content;
     }
+
+    public static function get_post_associated_with_product_id( $product_id, $status = 'draft' ) : array
+    {
+        $custom_post_type = 'circolo_listings';
+
+        $args = [
+            'post_status' => $status,
+            'post_type'   => $custom_post_type,
+            'meta_query' => [
+                [
+                    'key' => 'circolo_listing_product_id',
+                    'value' => '1828',
+                    'compare' => '='
+                ]
+            ]
+        ];
+
+        $posts = get_posts( apply_filters( 'wc_circolo_listing_args', $args ) );
+    
+        return $posts;
+
+        
+    }
+
+    public static function save_new_listing( $product_id, $cat_slug ) {
+        $category = Circolo_Listing_Helper::get_listing_category_by_slug($cat_slug);
+        //return $category;
+        $has_draft_post_with_product_id = Circolo_Listing_Helper::get_post_associated_with_product_id( $product_id );
+        //return $has_draft_post_with_product_id;
+		// create new post
+		if( empty( $has_draft_post_with_product_id ) ){
+			return Circolo_Listing_Helper::create_listing( $product_id, $category->term_id );
+		}
+
+        wp_set_post_categories($product_id, [$category]);
+		return $has_draft_post_with_product_id[0]->ID;
+    }
+
+    public static function create_listing( $product_id, $category ) {
+        $custom_post_type = 'circolo_listings';
+        $product = wc_get_product( $product_id );
+
+        // Create post object
+		$args = array(
+			'post_title'    => ' ',
+            'post_content'  => ' ',
+            'post_type'     => $custom_post_type,
+			'post_status'   => 'draft',
+			'post_category' => array( $category )
+		);
+		
+		// Insert the post into the database
+		if( $post_id = wp_insert_post( $args, true ) ) {
+            update_post_meta(
+				$post_id,
+				'circolo_listing_product_id',
+				$product_id
+			);
+
+            return $post_id;
+        }
+
+        return false;
+    }
+
+    public static function get_listing_category_by_slug( $slug ) {
+        $category = get_term_by('slug', $slug, 'category');
+
+        return $category;
+    }
     
     public static function md_array_diff( $arraya, $arrayb )
     {

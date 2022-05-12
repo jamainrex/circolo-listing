@@ -100,6 +100,9 @@ class Circolo_Listing_Public {
 
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/circolo-listing-public.js', array( 'jquery' ), $this->version, false );
 
+		wp_localize_script( $this->plugin_name, 'circolo_ajax', array(
+			'url' => admin_url( 'admin-ajax.php' )
+		) );
 	}
 
 	/**

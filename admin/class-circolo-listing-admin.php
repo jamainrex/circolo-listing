@@ -97,7 +97,6 @@ class Circolo_Listing_Admin {
 		 */
 
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/circolo-listing-admin.js', array( 'jquery' ), $this->version, false );
-
 	}
 
 
@@ -367,5 +366,45 @@ class Circolo_Listing_Admin {
 					'after_title' => '</h3></div>'
 				)
 			);
+	}
+
+	// Add To Cart
+	public function ajax_add_to_cart() {
+			$product_id = apply_filters('woocommerce_add_to_cart_product_id', absint($_POST['product_id']));
+			$quantity = 1;
+			$passed_validation = apply_filters('woocommerce_add_to_cart_validation', true, $product_id, $quantity);
+			$product_status = get_post_status($product_id);
+			$categories = get_the_terms( $product_id, 'product_cat' );
+			$product_category = isset( $categories[0] ) ? $categories[0] : 0;
+
+			if ( $passed_validation && WC()->cart->add_to_cart($product_id, $quantity) && 'publish' === $product_status) {
+
+				do_action('woocommerce_ajax_added_to_cart', $product_id);
+
+				if ('yes' === get_option('woocommerce_cart_redirect_after_add')) {
+					wc_add_to_cart_message(array($product_id => $quantity), true);
+				}
+
+				$circolo_listing = Circolo_Listing_Helper::save_new_listing($product_id, $product_category->slug);
+				//echo wp_send_json($circolo_listing);
+				//wp_die();
+
+				$data = array(
+					'success' => true,
+					'listing' => $circolo_listing,
+					'redirect_url' => 'https://wordpress-722433-2601660.cloudwaysapps.com/create-a-post/enter-post-detail/?post_id='.$circolo_listing,
+				);
+
+				echo wp_send_json($data);
+			} else {
+
+				$data = array(
+					'error' => true,
+					'product_url' => apply_filters('woocommerce_cart_redirect_after_error', get_permalink($product_id), $product_id));
+
+				echo wp_send_json($data);
+			}
+
+			wp_die();
 	}
 }

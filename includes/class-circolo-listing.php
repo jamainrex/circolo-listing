@@ -180,6 +180,9 @@ class Circolo_Listing {
 		$this->loader->add_action( 'save_post', $plugin_admin, 'set_post_category', 10,3 );
 
 		//$this->loader->add_action( 'plugins_loaded', Circolo_Listing_PageTemplater::class, 'get_instance' );
+
+		$this->loader->add_action('wp_ajax_woocommerce_ajax_add_to_cart', $plugin_admin, 'ajax_add_to_cart');
+		$this->loader->add_action('wp_ajax_nopriv_woocommerce_ajax_add_to_cart', $plugin_admin, 'ajax_add_to_cart');
 	}
 
 	/**
@@ -206,7 +209,7 @@ class Circolo_Listing {
 		$this->loader->add_action( 'add_meta_boxes', $plugin_wc, 'order_add_meta_boxes' );
 		$this->loader->add_action( 'woocommerce_product_options_general_product_data', $plugin_wc, 'product_date_range' );
 		//$this->loader->add_filter( 'woocommerce_product_data_tabs', $plugin_admin, 'wc_new_product_tab' );
-	
+
 		$this->loader->add_filter( 'woocommerce_add_to_cart_validation', $plugin_wc, 'limit_one_per_order', 10, 2 );
 	}
 
