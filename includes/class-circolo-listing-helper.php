@@ -210,10 +210,11 @@ class Circolo_Listing_Helper extends Circolo_Listing
         $args = [
             'post_status' => $status,
             'post_type'   => $custom_post_type,
+            'author' => get_current_user_id(),
             'meta_query' => [
                 [
                     'key' => 'circolo_listing_product_id',
-                    'value' => '1828',
+                    'value' => $product_id,
                     'compare' => '='
                 ]
             ]

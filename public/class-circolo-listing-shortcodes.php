@@ -9,6 +9,7 @@ class Circolo_Listing_Shortcodes
         add_shortcode( 'woocommerce-circolo-listing', [ __CLASS__, 'process_shortcode' ] );
         add_shortcode( 'wc-circolo-listing', [ __CLASS__, 'process_shortcode' ] );
         add_shortcode( 'wc-circolo-listing-category-products', [ __CLASS__, 'category_products' ] );
+        add_shortcode( 'wc-circolo-listing-post-details-form', [ __CLASS__, 'post_detail_form' ] );
         $restrict = new Circolo_Listing_Restrict_Content();
         $restrict->register_shortcodes();
     }
@@ -186,5 +187,58 @@ class Circolo_Listing_Shortcodes
     
         return '<div class="woocommerce">' . ob_get_clean() . '</div>';
     }
+
+    public function post_detail_form( $atts ) {
+    
+        extract(shortcode_atts(array(
+            'post_id'  => empty( $_GET['post_id'] ) ? '' : wc_clean( wp_unslash( $_GET['post_id'] ) )
+        ), $atts));
+
+        wp_enqueue_script( CIRCOLO_LISTING_PLUGIN_NAME . '-post-details-js', plugin_dir_url( __FILE__ ) . 'js/circolo-listing-post-details.js', array( 'jquery' ), CIRCOLO_LISTING_VERSION, false );
+
+        ob_start();
+
+        if( 'POST' == $_SERVER['REQUEST_METHOD'] && !empty( $_POST['action'] ) &&  $_POST['action'] == "f_edit_post" && isset($_POST['pid'])) {
+            //get the old post:
+            $post_to_edit = get_post((int)$_POST['pid']); 
+        
+            //echo '<pre>'.print_r($post_to_edit, true).'</pre>';
+            //do you validation
+            //...
+            //...
+        
+        
+            // Add the content of the form to $post_to_edit array
+            //$post_to_edit['post_title'] = $_POST['title'];
+            //$post_to_edit['post_content'] = $_POST['description'];
+            $args = [
+                'ID' => (int)$_POST['pid'],
+                'post_title' => $_POST['title'],
+                'post_content' => $_POST['description']
+            ];
+    
+            //save the edited post and return its ID
+            $pid = wp_update_post($args); 
+
+            if($pid) {
+                wp_redirect( site_url( 'create-a-post' ).'/review-for-approval' );
+                exit;
+            }
+        }
+
+        $cart = WC()->cart->get_cart();
+        $cart_item = current($cart);
+        $product_id = $cart_item['product_id'];
+
+        $posts = Circolo_Listing_Helper::get_post_associated_with_product_id( $product_id );
+        $circolo_listing = $posts[0];
+
+        //echo '<pre>'.print_r([$circolo_listing, $product_id, $cart_item], true).'</pre>';
+        require plugin_dir_path( dirname( __FILE__ ) ) . 'public/partials/shortcode-post-details-form.php';
+        wp_reset_postdata();
+    
+        return '<div class="woocommerce">' . ob_get_clean() . '</div>';
+    }
+
 
 }

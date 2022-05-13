@@ -129,4 +129,98 @@ class Circolo_Listing_WooCommerce {
 	
 		return $passed_validation;
 	}
+
+	
+	public function order_processed( $order_id ) {
+		// Getting an instance of the order object
+		$order = wc_get_order( $order_id );
+
+		if($order->is_paid())
+			$paid = 'yes';
+		else
+			$paid = 'no';
+
+			// iterating through each order items (getting product ID and the product object) 
+		// (work for simple and variable products)
+		foreach ( $order->get_items() as $item_id => $item ) {
+			$product_id = $item['product_id']; // simple product
+	
+			// Get the product object
+			//$product = wc_get_product( $product_id );
+				
+			$posts = Circolo_Listing_Helper::get_post_associated_with_product_id( $product_id );
+			if( isset( $posts[0] ) ) {
+				$circolo_listing = $posts[0];
+				update_post_meta(
+					$circolo_listing->ID,
+					'circolo_listing_order_id',
+					$order->get_id()
+				);
+
+				// Update the post into the database
+  				wp_update_post( array(
+					'ID' => $circolo_listing->ID,
+					'post_status'   => 'pending',
+				) );
+
+				$order->update_meta_data( 'circolo_listings', $circolo_listing->ID );
+    			$order->save();
+
+				update_post_meta( 
+					$order->get_id(), 
+					'circolo_listings', 
+					$circolo_listing->ID
+				);
+			}
+		}
+		// Ouptput some data
+		echo '<p>Order ID: '. $order_id . ' — Order Status: ' . $order->get_status() . ' — Order is paid: ' . $paid . '</p>';
+	}
+
+	public function payment_complete( $order_id ) {
+		// Getting an instance of the order object
+		$order = wc_get_order( $order_id );
+
+		if($order->is_paid())
+			$paid = 'yes';
+		else
+			$paid = 'no';
+
+			// iterating through each order items (getting product ID and the product object) 
+		// (work for simple and variable products)
+		foreach ( $order->get_items() as $item_id => $item ) {
+			$product_id = $item['product_id']; // simple product
+	
+			// Get the product object
+			//$product = wc_get_product( $product_id );
+				
+			$posts = Circolo_Listing_Helper::get_post_associated_with_product_id( $product_id );
+			if( isset( $posts[0] ) ) {
+				$circolo_listing = $posts[0];
+				update_post_meta(
+					$circolo_listing->ID,
+					'circolo_listing_order_id',
+					$order->get_id()
+				);
+
+				// Update the post into the database
+  				wp_update_post( array(
+					'ID' => $circolo_listing->ID,
+					'post_status'   => 'pending',
+				) );
+
+				$order->update_meta_data( 'circolo_listings', $circolo_listing->ID );
+    			$order->save();
+
+				update_post_meta( 
+					$order->get_id(), 
+					'circolo_listings', 
+					$circolo_listing->ID
+				);
+			}
+		}
+		// Ouptput some data
+		echo '<p>Order ID: '. $order_id . ' — Order Status: ' . $order->get_status() . ' — Order is paid: ' . $paid . '</p>';
+	}
+	
 }

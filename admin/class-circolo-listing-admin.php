@@ -392,7 +392,7 @@ class Circolo_Listing_Admin {
 				$data = array(
 					'success' => true,
 					'listing' => $circolo_listing,
-					'redirect_url' => 'https://wordpress-722433-2601660.cloudwaysapps.com/create-a-post/enter-post-detail/?post_id='.$circolo_listing,
+					'redirect_url' => site_url( 'create-a-post' ).'/enter-post-detail/?post_id='.$circolo_listing,
 				);
 
 				echo wp_send_json($data);

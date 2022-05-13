@@ -209,6 +209,9 @@ class Circolo_Listing {
 		$this->loader->add_action( 'add_meta_boxes', $plugin_wc, 'order_add_meta_boxes' );
 		$this->loader->add_action( 'woocommerce_product_options_general_product_data', $plugin_wc, 'product_date_range' );
 		//$this->loader->add_filter( 'woocommerce_product_data_tabs', $plugin_admin, 'wc_new_product_tab' );
+		
+		$this->loader->add_action('woocommerce_checkout_order_processed', $plugin_wc, 'order_processed', 10, 1);
+		//$this->loader->add_action('woocommerce_payment_complete', $plugin_wc, 'payment_complete', 10, 1);
 
 		$this->loader->add_filter( 'woocommerce_add_to_cart_validation', $plugin_wc, 'limit_one_per_order', 10, 2 );
 	}
