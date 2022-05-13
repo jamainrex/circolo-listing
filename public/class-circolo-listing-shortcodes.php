@@ -198,6 +198,7 @@ class Circolo_Listing_Shortcodes
 
         ob_start();
 
+        $errors = [];
         if( 'POST' == $_SERVER['REQUEST_METHOD'] && !empty( $_POST['action'] ) &&  $_POST['action'] == "f_edit_post" && isset($_POST['pid'])) {
             //get the old post:
             $post_to_edit = get_post((int)$_POST['pid']); 
@@ -220,7 +221,29 @@ class Circolo_Listing_Shortcodes
             //save the edited post and return its ID
             $pid = wp_update_post($args); 
 
-            if($pid) {
+            //image upload
+                if (!function_exists('wp_generate_attachment_metadata')){
+                    require_once(ABSPATH . "wp-admin" . '/includes/image.php');
+                    require_once(ABSPATH . "wp-admin" . '/includes/file.php');
+                    require_once(ABSPATH . "wp-admin" . '/includes/media.php');
+                }
+                if ($_FILES) {
+                    foreach ($_FILES as $file => $array) {
+                        if ($_FILES[$file]['error'] !== UPLOAD_ERR_OK) {
+                            $errors[] = "upload error : " . $_FILES[$file]['error'];
+                        }
+                        $attach_id = media_handle_upload( $file, (int)$_POST['pid'] );
+                    }   
+                }
+                if ($attach_id > 0){
+                    //and if you want to set that image as Post  then use:
+                    update_post_meta((int)$_POST['pid'],'_thumbnail_id',$attach_id);
+                }
+
+            //if( isset( $_FILES['upload'] ) )
+            //   Circolo_Listing_Helper::add_custom_image((int)$_POST['pid'], $_FILES['upload']); /*Call image uploader function*/
+
+            if($pid && empty($errors)) {
                 wp_redirect( site_url( 'create-a-post' ).'/review-for-approval' );
                 exit;
             }
@@ -239,6 +262,4 @@ class Circolo_Listing_Shortcodes
     
         return '<div class="woocommerce">' . ob_get_clean() . '</div>';
     }
-
-
 }
