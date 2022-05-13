@@ -203,6 +203,12 @@ class Circolo_Listing_Helper extends Circolo_Listing
         return $protected_content;
     }
 
+    public static function get_post( $post_id )
+    {
+        $custom_post_type = 'circolo_listings';
+        return get_post( $post_id, ARRAY_A);
+    }
+
     public static function get_post_associated_with_product_id( $product_id, $status = 'draft' ) : array
     {
         $custom_post_type = 'circolo_listings';
@@ -223,8 +229,6 @@ class Circolo_Listing_Helper extends Circolo_Listing
         $posts = get_posts( apply_filters( 'wc_circolo_listing_args', $args ) );
     
         return $posts;
-
-        
     }
 
     public static function save_new_listing( $product_id, $cat_slug ) {

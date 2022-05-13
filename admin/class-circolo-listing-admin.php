@@ -218,18 +218,19 @@ class Circolo_Listing_Admin {
 
 	public function custom_box_html() {
 		global $post;
-		$value = get_post_meta( $post->ID, CIRCOLO_LISTING_SLUG . '_order_id', true );
-		// Use nonce for verification to secure data sending
-		wp_nonce_field( basename( __FILE__ ), 'circolo_nonce' );
+		$order_id = get_post_meta( $post->ID, CIRCOLO_LISTING_SLUG . '_order_id', true );
+		
+		// Getting an instance of the order object
+		if(is_numeric($order_id) && $order = wc_get_order( $order_id ) ) {
+			if($order->is_paid())
+				$paid = 'yes';
+			else
+				$paid = 'no';
 
-		$wp_orders = wc_get_orders(array());
-		//echo '<pre>'.print_r($wp_orders, true).'</pre>';
-		?>
-
-		<!-- my custom value input -->
-		<input type="number" min="0" name="<?php echo CIRCOLO_LISTING_SLUG . '_order_id' ?>" value="<?php echo $value ?>">
-
-		<?php
+			echo '<p>Order ID: '. $order_id . ' — Order Status: ' . $order->get_status() . ' — Order is paid: ' . $paid . '</p>';
+		} else {
+			echo '<p>Pending</p>';
+		}
 	}
 
 	public function save_meta_fields( $post_id ) {

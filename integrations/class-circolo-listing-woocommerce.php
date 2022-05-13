@@ -63,11 +63,11 @@ class Circolo_Listing_WooCommerce {
         global $post;
 
         $meta_field_data = get_post_meta( $post->ID, 'circolo_listings', true ) ? get_post_meta( $post->ID, 'circolo_listings', true ) : '';
+		$circolo_listing = Circolo_Listing_Helper::get_post( (int) $meta_field_data );
 
-        echo '<input type="hidden" name="mv_other_meta_field_nonce" value="' . wp_create_nonce() . '">
-        <p style="border-bottom:solid 1px #eee;padding-bottom:13px;">
-            <input type="text" style="width:250px;";" name="my_field_name" placeholder="' . $meta_field_data . '" value="' . $meta_field_data . '"></p>';
-
+		if( $circolo_listing ){
+			echo '<a href="'. get_admin_url().'post.php?post='. $circolo_listing['ID'] .'&action=edit">'.$circolo_listing['post_title'].' - '.'[#'.$circolo_listing['ID'].']</a>';
+		}
     }
 
 	public function new_product_tab($tabs){
@@ -203,10 +203,11 @@ class Circolo_Listing_WooCommerce {
 					$order->get_id()
 				);
 
+				$circolo_listing_status = $order->get_status() == 'completed' ? 'publish' : 'pending';
 				// Update the post into the database
   				wp_update_post( array(
 					'ID' => $circolo_listing->ID,
-					'post_status'   => 'pending',
+					'post_status'   => $circolo_listing_status,
 				) );
 
 				$order->update_meta_data( 'circolo_listings', $circolo_listing->ID );
@@ -222,5 +223,23 @@ class Circolo_Listing_WooCommerce {
 		// Ouptput some data
 		echo '<p>Order ID: '. $order_id . ' — Order Status: ' . $order->get_status() . ' — Order is paid: ' . $paid . '</p>';
 	}
-	
+
+	// define the woocommerce_update_order callback 
+	public function update_order( $order_id ) { 
+		// Getting an instance of the order object
+		$order = wc_get_order( $order_id );
+
+		$circolo_listing_status = $order->get_status() == 'completed' ? 'publish' : 'pending';
+
+		// Only if order status has been set to completed AND Get Order meta Listing ID
+		if( $circolo_listing_status == 'publish' && $circolo_listing_id = get_post_meta( $order->get_id(), 'circolo_listings', true ) ) {
+			
+			// Update the post into the database
+			wp_update_post( array(
+				'ID' => $circolo_listing_id,
+				'post_status'   => $circolo_listing_status,
+			) );
+		}
+	}
+        
 }
