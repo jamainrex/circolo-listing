@@ -227,7 +227,8 @@ class Circolo_Listing_Admin {
 			else
 				$paid = 'no';
 
-			echo '<p>Order ID: '. $order_id . ' — Order Status: ' . $order->get_status() . ' — Order is paid: ' . $paid . '</p>';
+			$order_link = '<a href="'. get_admin_url().'post.php?post='. $order_id .'&action=edit">'. $order_id .'</a>';
+			echo '<p>Order ID: '. $order_link . ' — Order Status: ' . $order->get_status() . ' — Order is paid: ' . $paid . '</p>';
 		} else {
 			echo '<p>Pending</p>';
 		}
