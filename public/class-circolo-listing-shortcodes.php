@@ -176,7 +176,6 @@ class Circolo_Listing_Shortcodes
         ), $atts));
 
         wp_enqueue_script( CIRCOLO_LISTING_PLUGIN_NAME . '-category-products-js', plugin_dir_url( __FILE__ ) . 'js/circolo-listing-products.js', array( 'jquery' ), CIRCOLO_LISTING_VERSION, false );
-
         ob_start();
     
         $products = Circolo_Listing_Helper::get_category_products( $category ); // new WP_Query( $args );
@@ -194,8 +193,9 @@ class Circolo_Listing_Shortcodes
             'post_id'  => empty( $_GET['post_id'] ) ? '' : wc_clean( wp_unslash( $_GET['post_id'] ) )
         ), $atts));
 
+        wp_enqueue_script('jquery-ui-sortable');
         wp_enqueue_script( CIRCOLO_LISTING_PLUGIN_NAME . '-post-details-js', plugin_dir_url( __FILE__ ) . 'js/circolo-listing-post-details.js', array( 'jquery' ), CIRCOLO_LISTING_VERSION, false );
-
+        wp_enqueue_style( CIRCOLO_LISTING_PLUGIN_NAME . '-post-details-css', plugin_dir_url( __FILE__ ) . 'css/circolo-listing-post-details.css', array(), CIRCOLO_LISTING_VERSION, 'all' );
         ob_start();
 
         $errors = [];
@@ -203,7 +203,8 @@ class Circolo_Listing_Shortcodes
             //get the old post:
             $post_to_edit = get_post((int)$_POST['pid']); 
         
-            //echo '<pre>'.print_r($post_to_edit, true).'</pre>';
+            //echo '<pre>'.print_r($_FILES, true).'</pre>';
+            //exit();
             //do you validation
             //...
             //...

@@ -7,19 +7,23 @@
         <?php }
     } ?>
     <form id="new_post" name="new_post" method="post" action="" enctype="multipart/form-data">
+        <fieldset class="form-group">
+            <a href="javascript:void(0)" id="upload-image-launch">Upload Image</a>
+            <input type="file" id="pro-image" name="thumbnail" style="display: none;" multiple class="form-control">
+        </fieldset>
+		<div class="preview-images-zone"></div>
         <p>
             <label for="title">Title</label><br />
             <input type="text" id="title" value="<?php echo $circolo_listing->post_title; ?>" tabindex="1" style="width: 100%;
 }" name="title" />
+			<small>Min 10 characters and Max of 50 Characters you are at 10</small>
         </p>
         <p>
             <label for="description">Short Description</label><br />
             <textarea id="description" tabindex="3" name="description" cols="50" rows="6"><?php echo $circolo_listing->post_content; ?></textarea>
+			<small>Min 200 Chacters and a Max of 400 Characters</small>
         </p>
-        <p>
-            <label for="custom-upload">Upload Featured Image:</label>
-            <input type="file" tabindex="3" name="thumbnail" id="thumbnail" />
-            </p>
+        
             <?php
             /*Retrieving the image*/
             $attachment = get_post_meta($circolo_listing->ID, '_thumbnail_id');
