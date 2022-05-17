@@ -6,6 +6,8 @@
     padding: 5px 5px 0px 5px;
     position: relative;
     overflow:auto;
+	background-color: #DBDACF;
+	margin-top: 5px;
 }
 .preview-images-zone > .preview-image:first-child {
     height: 185px;
@@ -57,4 +59,39 @@
 .preview-image:hover > .tools-edit-image,
 .preview-image:hover > .image-cancel {
     display: block;
+}
+.form-container {
+	background-color:#ffffff;
+	padding: 20px 20px 100px;
+}
+.image-field {
+	display: inline-block;
+    width: 48%;
+    margin-right: 2%;
+    vertical-align: top;
+}
+
+.image-field-form {
+	height: 400px;
+    background-color: #DBDACF;
+	display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#upload-image-launch {
+	color:#50563C;
+	background-color:#ffffff;
+	padding: 10px 20px;
+}
+
+.content-field {
+	display: inline-block;
+    width: 48%;
+}
+#postbox *, .image-field *, .content-field * {
+	font-family: "Be Vietnam Pro", Sans-serif;
+}
+.preview-btn {
+	text-align:center;
+	margin-top:100px;
 }

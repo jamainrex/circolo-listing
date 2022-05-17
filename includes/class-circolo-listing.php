@@ -183,6 +183,10 @@ class Circolo_Listing {
 
 		$this->loader->add_action('wp_ajax_woocommerce_ajax_add_to_cart', $plugin_admin, 'ajax_add_to_cart');
 		$this->loader->add_action('wp_ajax_nopriv_woocommerce_ajax_add_to_cart', $plugin_admin, 'ajax_add_to_cart');
+
+		$this->loader->add_action('wp_ajax_circolo_listing_save', $plugin_admin, 'save_listing');
+		$this->loader->add_action('wp_ajax_nopriv_circolo_listing_save', $plugin_admin, 'save_listing');
+		
 	}
 
 	/**

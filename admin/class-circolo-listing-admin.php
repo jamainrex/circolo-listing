@@ -409,4 +409,83 @@ class Circolo_Listing_Admin {
 
 			wp_die();
 	}
+
+	public function save_listing() {
+		//  echo '<pre>'.print_r($_POST, true).'</pre>';
+		//  echo '<pre>'.print_r($_FILES, true).'</pre>';
+        //  wp_die();
+
+		$errors = [];
+        if( 'POST' == $_SERVER['REQUEST_METHOD'] && !empty( $_POST['action'] ) &&  $_POST['action'] == "circolo_listing_save" && isset($_POST['pid'])) {
+            //get the old post:
+            $post_to_edit = get_post((int)$_POST['pid']); 
+        
+            $args = [
+                'ID' => (int)$_POST['pid'],
+                'post_title' => $_POST['title'],
+                'post_content' => $_POST['description']
+            ];
+    
+            //save the edited post and return its ID
+            $pid = wp_update_post($args); 
+
+            //image upload
+                if (!function_exists('wp_generate_attachment_metadata')){
+                    require_once(ABSPATH . "wp-admin" . '/includes/image.php');
+                    require_once(ABSPATH . "wp-admin" . '/includes/file.php');
+                    require_once(ABSPATH . "wp-admin" . '/includes/media.php');
+                }
+                if ($_FILES) {
+					for( $x = 0; $x <= 4; $x++ ){
+						if( isset( $_POST['file-'.$x] ) )
+							update_post_meta((int)$_POST['pid'],'_image_'.$x, $_POST['file-'.$x]);
+						else
+							update_post_meta((int)$_POST['pid'],'_image_'.$x, "");
+					}
+
+                    foreach ($_FILES as $file => $array) {
+						if( $file == 'thumbnail' )
+							continue;
+		
+						$fname = explode('-', $file);
+
+                        if ($_FILES[$file]['error'] !== UPLOAD_ERR_OK) {
+                            $errors[] = "upload error : " . $_FILES[$file]['error'];
+                        }
+                        $attach_id = media_handle_upload( $file, (int)$_POST['pid'] );
+
+						if( $attach_id > 0 && isset( $fname[1] ) && is_numeric( $fname[1] ) ) {
+							update_post_meta((int)$_POST['pid'],'_image_'.$fname[1],$attach_id);
+						}
+
+						if ($attach_id > 0 && isset( $fname[1] ) && is_numeric( $fname[1] ) && $fname[1] == 0){
+							//and if you want to set that image as Post  then use:
+							update_post_meta((int)$_POST['pid'],'_thumbnail_id',$attach_id);
+						}
+                    }   
+                }
+                
+
+            //if( isset( $_FILES['upload'] ) )
+            //   Circolo_Listing_Helper::add_custom_image((int)$_POST['pid'], $_FILES['upload']); /*Call image uploader function*/
+
+            if($pid && empty($errors)) {
+				$data = array(
+					'success' => true,
+					'redirect_url' => site_url( 'create-a-post' ).'/review-for-approval',
+				);
+
+				echo wp_send_json($data);
+            } else {
+				$data = array(
+					'error' => true,
+					'messages' => $errors
+				);
+
+				echo wp_send_json($data);
+			}
+        }
+
+		wp_die();
+	}
 }
