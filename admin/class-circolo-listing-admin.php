@@ -219,6 +219,7 @@ class Circolo_Listing_Admin {
 	public function custom_box_html() {
 		global $post;
 		$order_id = get_post_meta( $post->ID, CIRCOLO_LISTING_SLUG . '_order_id', true );
+		$date_approved = get_post_meta( $post->ID, CIRCOLO_LISTING_SLUG . '_date_approved', true );
 		
 		// Getting an instance of the order object
 		if(is_numeric($order_id) && $order = wc_get_order( $order_id ) ) {
@@ -229,6 +230,10 @@ class Circolo_Listing_Admin {
 
 			$order_link = '<a href="'. get_admin_url().'post.php?post='. $order_id .'&action=edit">'. $order_id .'</a>';
 			echo '<p>Order ID: '. $order_link . ' — Order Status: ' . $order->get_status() . ' — Order is paid: ' . $paid . '</p>';
+			
+			if( $date_approved ) {
+				echo '<p>Date Approved: ' . $date_approved . '</p>';
+			}
 		} else {
 			echo '<p>Pending</p>';
 		}

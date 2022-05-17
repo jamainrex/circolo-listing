@@ -239,6 +239,12 @@ class Circolo_Listing_WooCommerce {
 				'ID' => $circolo_listing_id,
 				'post_status'   => $circolo_listing_status,
 			) );
+
+			update_post_meta(
+				$circolo_listing_id,
+				'circolo_listing_date_approved',
+				Circolo_Listing_Helper::current_time()
+			);
 		}
 	}
         
