@@ -127,6 +127,11 @@ class Circolo_Listing_Helper extends Circolo_Listing
     {
         return get_option( 'date_format', true ) . ' ' . get_option( 'time_format', true );
     }
+
+    public static function calculate_expiry_date( $datetime ) : Carbon
+    {
+        return Carbon::parse( $datetime )->addDays(90);
+    }
     
     public static function get_protected_posts( $args = null, $transient = 'posts', $bypass_transient = false ) : array
     {

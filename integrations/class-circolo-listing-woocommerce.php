@@ -240,10 +240,19 @@ class Circolo_Listing_WooCommerce {
 				'post_status'   => $circolo_listing_status,
 			) );
 
+			$approved_date = Circolo_Listing_Helper::current_time();
+			$expire_date = $approved_date->addDays(90);
+
 			update_post_meta(
 				$circolo_listing_id,
 				'circolo_listing_date_approved',
-				Circolo_Listing_Helper::current_time()
+				$approved_date
+			);
+
+			update_post_meta(
+				$circolo_listing_id,
+				'circolo_listing_date_expire',
+				$expire_date
 			);
 		}
 	}

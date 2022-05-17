@@ -232,7 +232,9 @@ class Circolo_Listing_Admin {
 			echo '<p>Order ID: '. $order_link . ' — Order Status: ' . $order->get_status() . ' — Order is paid: ' . $paid . '</p>';
 			
 			if( $date_approved ) {
+				$expiry_date = Circolo_Listing_Helper::calculate_expiry_date($date_approved);
 				echo '<p>Date Approved: ' . $date_approved . '</p>';
+				echo '<p>Date Expire: ' . $expiry_date . '</p>';
 			}
 		} else {
 			echo '<p>Pending</p>';
