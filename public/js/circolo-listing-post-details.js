@@ -32,7 +32,10 @@ var limit = 4;
 			if (num <= limit || checkdiv <= limit){  
 			 
 			  var num = checkdiv;
-			  if (!file.type.match('image')) continue;
+			  if (!file.type.match('image')) {
+				  	alert(file.name+" File type not supported!");
+					continue;
+			  }
 			  
 			  imageFiles[num] = file;
 			  //imageFiles.push([num]);
