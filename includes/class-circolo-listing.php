@@ -205,19 +205,21 @@ class Circolo_Listing {
 		$this->loader->add_action( 'template_redirect', $plugin_public, 'set_product_ids' );
 		$this->loader->add_action( 'template_redirect', $plugin_public, 'restrict_listing' );
 		$this->loader->add_filter( 'the_content', $plugin_public, 'restrict_content' );
+
+		
 	}
 
 	private function define_woocommerce_hooks() {
 		$plugin_wc = new Circolo_Listing_WooCommerce( $this->get_plugin_name(), $this->get_version() );
 
+		$this->loader->add_action( 'init', $plugin_wc, 'init' );
 		$this->loader->add_action( 'add_meta_boxes', $plugin_wc, 'order_add_meta_boxes' );
 		$this->loader->add_action( 'woocommerce_product_options_general_product_data', $plugin_wc, 'product_date_range' );
 		//$this->loader->add_filter( 'woocommerce_product_data_tabs', $plugin_admin, 'wc_new_product_tab' );
-		
+		$this->loader->add_action( 'woocommerce_before_checkout_form', $plugin_wc, 'order_review', 10 );
 		$this->loader->add_action('woocommerce_checkout_order_processed', $plugin_wc, 'order_processed', 10, 1);
 		//$this->loader->add_action('woocommerce_payment_complete', $plugin_wc, 'payment_complete', 10, 1);
 		$this->loader->add_action( 'woocommerce_update_order', $plugin_wc, 'update_order', 10, 1 ); 
-
 		$this->loader->add_filter( 'woocommerce_add_to_cart_validation', $plugin_wc, 'limit_one_per_order', 10, 2 );
 	}
 

@@ -54,6 +54,11 @@ class Circolo_Listing_WooCommerce {
 
 	}
 
+	public function init()
+    {
+		remove_action( 'woocommerce_checkout_order_review', 'woocommerce_order_review', 10 );
+    }
+
 	public function order_add_meta_boxes() {
 		add_meta_box( 'circolo_listing_field', __('Circolo Listing','woocommerce'), array( $this, 'order_add_listing_field_html' ), 'shop_order', 'side', 'core' );
 	}
@@ -256,5 +261,20 @@ class Circolo_Listing_WooCommerce {
 			);
 		}
 	}
+
+	public function order_review() {
+        ob_start();
+
+        $cart = WC()->cart->get_cart();
+        $cart_item = current($cart);
+        $product_id = $cart_item['product_id'];
+
+        $product = wc_get_product( $product_id );
+
+        require plugin_dir_path( dirname( __FILE__ ) ) . 'public/partials/shortcode-order-review.php';
+        wp_reset_postdata();
+    
+        echo '<div class="woocommerce">' . ob_get_clean() . '</div>';
+    }
         
 }
