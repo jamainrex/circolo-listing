@@ -255,6 +255,10 @@ class Circolo_Listing_Shortcodes
         $product_id = $cart_item['product_id'];
         $product = wc_get_product( $product_id );
 
+        $categories = get_the_terms( $product->get_id(), 'product_cat' );
+
+        //echo '<pre>'.print_r($categories[0]->slug, true).'</pre>';
+
         $posts = Circolo_Listing_Helper::get_post_associated_with_product_id( $product_id );
         $circolo_listing = $posts[0];
 
@@ -270,7 +274,7 @@ class Circolo_Listing_Shortcodes
                 //$listingImages[$x] = $image;
         }
 
-        //echo '<pre>'.print_r($listingImages, true).'</pre>';
+        
         
         require plugin_dir_path( dirname( __FILE__ ) ) . 'public/partials/shortcode-post-details-form.php';
         wp_reset_postdata();

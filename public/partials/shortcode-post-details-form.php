@@ -13,6 +13,7 @@
             
             ?>
     <input id="post-type-title" value="<?php echo $product->get_name() ?>" type="hidden" />
+    <input id="post-type-category" value="<?php echo (isset($categories[0]) ? $categories[0]->slug : '')?>" type="hidden" />
     <form id="new_post" name="new_post" method="post" action="" enctype="multipart/form-data">
 		<div class="form-container">
 			<div class="image-field">

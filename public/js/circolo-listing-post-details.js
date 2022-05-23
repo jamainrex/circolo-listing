@@ -22,6 +22,13 @@ var limit = 4;
 
 		var postTypeTitle = $('#post-type-title').val();
 		$("#post-details-header").find('h3.elementor-heading-title').append($('<span>: '+postTypeTitle+'</span>'));
+
+		$("#post-details-back-btn a").on('click', function(e) {
+			e.preventDefault();
+			var url = $(this).attr('href');
+			var category = $("#post-type-category").val();
+			window.location.href = url + "?category="+category;
+		});
 	  });
   
 	  function readImage() {
