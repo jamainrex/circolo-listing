@@ -401,7 +401,7 @@ class Circolo_Listing_Admin {
 				$data = array(
 					'success' => true,
 					'listing' => $circolo_listing,
-					'redirect_url' => site_url( 'create-a-post' ).'/enter-post-detail/?post_id='.$circolo_listing,
+					'redirect_url' => site_url( 'create-a-listing' ).'/enter-listing-details/?post_id='.$circolo_listing,
 				);
 
 				echo wp_send_json($data);
@@ -483,7 +483,7 @@ class Circolo_Listing_Admin {
             if($pid && empty($errors)) {
 				$data = array(
 					'success' => true,
-					'redirect_url' => site_url( 'create-a-post' ).'/review-for-approval',
+					'redirect_url' => site_url( 'create-a-listing' ).'/review-for-approval',
 				);
 
 				echo wp_send_json($data);
