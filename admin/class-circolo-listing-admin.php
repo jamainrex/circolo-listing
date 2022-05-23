@@ -418,9 +418,9 @@ class Circolo_Listing_Admin {
 	}
 
 	public function save_listing() {
-		//  echo '<pre>'.print_r($_POST, true).'</pre>';
-		//  echo '<pre>'.print_r($_FILES, true).'</pre>';
-        //  wp_die();
+		//   echo '<pre>'.print_r($_POST, true).'</pre>';
+		//   echo '<pre>'.print_r($_FILES, true).'</pre>';
+        //   wp_die();
 
 		$errors = [];
         if( 'POST' == $_SERVER['REQUEST_METHOD'] && !empty( $_POST['action'] ) &&  $_POST['action'] == "circolo_listing_save" && isset($_POST['pid'])) {
@@ -430,7 +430,8 @@ class Circolo_Listing_Admin {
             $args = [
                 'ID' => (int)$_POST['pid'],
                 'post_title' => $_POST['title'],
-                'post_content' => $_POST['description']
+                'post_content' => $_POST['description'],
+				'post_excerpt' => $_POST['short_description']
             ];
     
             //save the edited post and return its ID
@@ -453,12 +454,15 @@ class Circolo_Listing_Admin {
                     foreach ($_FILES as $file => $array) {
 						if( $file == 'thumbnail' )
 							continue;
+
+						if ($_FILES[$file]['error'] !== UPLOAD_ERR_OK) {
+							//$errors[] = "upload error : " . $_FILES[$file]['error'];
+							continue;
+						}
 		
 						$fname = explode('-', $file);
 
-                        if ($_FILES[$file]['error'] !== UPLOAD_ERR_OK) {
-                            $errors[] = "upload error : " . $_FILES[$file]['error'];
-                        }
+                         
                         $attach_id = media_handle_upload( $file, (int)$_POST['pid'] );
 
 						if( $attach_id > 0 && isset( $fname[1] ) && is_numeric( $fname[1] ) ) {

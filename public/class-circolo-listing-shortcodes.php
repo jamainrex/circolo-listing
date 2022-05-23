@@ -253,6 +253,7 @@ class Circolo_Listing_Shortcodes
         $cart = WC()->cart->get_cart();
         $cart_item = current($cart);
         $product_id = $cart_item['product_id'];
+        $product = wc_get_product( $product_id );
 
         $posts = Circolo_Listing_Helper::get_post_associated_with_product_id( $product_id );
         $circolo_listing = $posts[0];
@@ -260,9 +261,9 @@ class Circolo_Listing_Shortcodes
         $listingImages = [];
         for ($x = 0; $x <= 4; $x++) {
             $image = get_post_meta($circolo_listing->ID, '_image_'.$x);
-            //echo is_wp_error( $image );
-            if( !empty($image[0]) ){
-                $listingImages[] = $image;
+            //echo "Is Error: " . is_wp_error( $image[0] );
+            if( !empty($image[0]) && !is_wp_error( $image[0] ) ){
+                $listingImages[$x] = $image;
             }
                 //echo '<pre>'.print_r($image, true).'</pre>';
 

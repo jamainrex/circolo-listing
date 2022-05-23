@@ -97,6 +97,16 @@
 	margin-top:100px;
 }
 
+.hide-upload-btn {
+    display: none;
+}
+
+.image-field-item {
+    height: 150px;
+    width: 32.8%;
+    display: inline-flex;
+}
+
 @media only screen and (max-width:600px) {
 	.image-field {
 		width: 100%;

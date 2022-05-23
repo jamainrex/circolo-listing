@@ -2,24 +2,100 @@
 	'use strict';
   
 var imageFiles = [];
-var num = 0;
 var limit = 4;
 
 	$(document).ready(function() {
-		document.getElementById('pro-image').addEventListener('change', readImage, false);
+		document.getElementById('pro-image0').addEventListener('change', readImage, false);
+		document.getElementById('pro-image1').addEventListener('change', readAddImage, false);
+		document.getElementById('pro-image2').addEventListener('change', readAddImage, false);
+		document.getElementById('pro-image3').addEventListener('change', readAddImage, false);
+		readAddImage
 
-		$( ".preview-images-zone" ).sortable();
+		//$( ".preview-images-zone" ).sortable();
 		$(document).on('click', '.image-cancel', function() {
 			let no = $(this).data('no');
 			$(".preview-image.preview-show-"+no).remove();
 			imageFiles.splice(no,1);
+			$("#upload-image-launch"+no).removeClass('hide-upload-btn');
+			$("#pro-image"+no).val('');
 		});
+
+		var postTypeTitle = $('#post-type-title').val();
+		$("#post-details-header").find('h3.elementor-heading-title').append($('<span>: '+postTypeTitle+'</span>'));
 	  });
   
-  
+	  function readImage() {
+		//console.log("readImage");
+		//console.log($(this));
+		var num = 0;
+	  if (window.File && window.FileList && window.FileReader) {
+		  var files = event.target.files; //FileList object
+		  var output = $("#preview-featured-image-zone");
+		  var file = files[0];
+		  	
+		  if (!file.type.match('image')) {
+		  	alert(file.name+" File type not supported!");
+		  	return;
+		  }
+				
+			var picReader = new FileReader();
+		  	picReader.addEventListener('load', function (event) {
+		  		  var picFile = event.target;
+		  		  console.log("File: ", picFile);
+		  		  var html =  '<div class="preview-image preview-show-' + num + '" data-type="file" data-file="'+num+'">' +
+		  		  			  //'<input type="file" id="img-'+num+'" name="image['+num+']" style="display: none;" />'+
+		  					  '<div class="image-cancel" data-no="' + num + '">x</div>' +
+		  					  '<div class="image-zone"><img id="pro-img-' + num + '" src="' + picFile.result + '"></div>' +
+		  					  '</div>';
+	
+		  		  output.append(html);
+		  	  });
+		  	picReader.readAsDataURL(file);
 
-  function readImage() {
-	  //console.log("readImage");
+	    imageFiles[num] = file;
+		$("#upload-image-launch").addClass('hide-upload-btn');
+	  } else {
+		  console.log('Browser not support');
+	  }
+	}
+
+  function readAddImage() {
+		//console.log("readImage");
+	  //console.log($(this));
+	  var num = $(this).data('formnum');
+	  console.log("file-",num);
+	  if (window.File && window.FileList && window.FileReader) {
+		  var files = event.target.files; //FileList object
+		  var output = $("#preview-image-zone-"+num);
+		  var file = files[0];
+		  	
+		  if (!file.type.match('image')) {
+		  	alert(file.name+" File type not supported!");
+		  	return;
+		  }
+				
+			var picReader = new FileReader();
+		  	picReader.addEventListener('load', function (event) {
+		  		  var picFile = event.target;
+		  		  console.log("File: ", picFile);
+		  		  var html =  '<div class="preview-image preview-show-' + num + '" data-type="file" data-file="'+num+'">' +
+		  		  			  //'<input type="file" id="img-'+num+'" name="image['+num+']" style="display: none;" />'+
+		  					  '<div class="image-cancel" data-no="' + num + '">x</div>' +
+		  					  '<div class="image-zone"><img id="pro-img-' + num + '" src="' + picFile.result + '"></div>' +
+		  					  '</div>';
+	
+		  		  output.append(html);
+		  	  });
+		  	picReader.readAsDataURL(file);
+
+		imageFiles[num] = file;
+		$("#upload-image-launch"+num).addClass('hide-upload-btn');
+	  } else {
+		  console.log('Browser not support');
+	  }
+	}
+
+  function readAdditionalImage() {
 	if (window.File && window.FileList && window.FileReader) {
 		var files = event.target.files; //FileList object
 		var output = $(".preview-images-zone");
@@ -59,9 +135,10 @@ var limit = 4;
 		  }
 			picReader.readAsDataURL(file);
 			//console.log("picReader: ", picReader);
-		}
 		$("#pro-image").val('');
-		//console.log("imageFiles: ", imageFiles);
+		console.log("imageFiles: ", imageFiles);
+		}
+		
 	} else {
 		console.log('Browser not support');
 	}
@@ -69,8 +146,23 @@ var limit = 4;
 
   $('#upload-image-launch').on('click', function(e){
 	  e.preventDefault();
-	$('#pro-image').click();
+	$('#pro-image0').click();
   });
+
+  $('#upload-image-launch1').on('click', function(e){
+	e.preventDefault();
+  $('#pro-image1').click();
+});
+
+$('#upload-image-launch2').on('click', function(e){
+	e.preventDefault();
+  $('#pro-image2').click();
+});
+
+$('#upload-image-launch3').on('click', function(e){
+	e.preventDefault();
+  $('#pro-image3').click();
+});
   
   $('form#new_post').submit( function(e) {
 	e.preventDefault();
