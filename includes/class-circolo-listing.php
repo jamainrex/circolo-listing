@@ -175,9 +175,16 @@ class Circolo_Listing {
 		$this->loader->add_action( 'admin_menu', $plugin_admin, 'addPluginAdminMenu', 9);
 		$this->loader->add_action( 'add_meta_boxes', $plugin_admin, 'add_custom_box');
 		$this->loader->add_action( 'save_post', $plugin_admin, 'save_meta_fields' );
+		$this->loader->add_action( 'save_post', $plugin_admin, 'images_save' );
+		$this->loader->add_action( 'save_post', $plugin_admin, 'save_status_fields' );
 		$this->loader->add_action( 'new_to_publish', $plugin_admin, 'save_meta_fields' );
+		$this->loader->add_action( 'new_to_publish', $plugin_admin, 'images_save' );
+		$this->loader->add_action( 'new_to_publish', $plugin_admin, 'save_status_fields' );
 		$this->loader->add_action( 'widgets_init', $plugin_admin, 'widget_area' );
 		$this->loader->add_action( 'save_post', $plugin_admin, 'set_post_category', 10,3 );
+
+		$this->loader->add_action( 'admin_head-post.php', $plugin_admin, 'images_styles_scripts' );
+		$this->loader->add_action( 'admin_head-post-new.php', $plugin_admin, 'images_styles_scripts' );
 
 		//$this->loader->add_action( 'plugins_loaded', Circolo_Listing_PageTemplater::class, 'get_instance' );
 

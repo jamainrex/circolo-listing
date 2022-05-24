@@ -192,14 +192,21 @@ class Circolo_Listing_Admin {
 		foreach ( $screens as $screen ) {
 			add_meta_box(
 				CIRCOLO_LISTING_SLUG . '_product_id',                 // Unique ID
-				'Post Type',      // Box title
+				'Listing Type',      // Box title
 				array($this, 'post_type_box_html'),  // Content callback, must be of type callable
 				$screen                            // Post type
 			);
 			add_meta_box(
 				CIRCOLO_LISTING_SLUG . '_order_id',                 // Unique ID
-				'Order',      // Box title
+				'Listing Status',      // Box title
 				array($this, 'custom_box_html'),  // Content callback, must be of type callable
+				$screen                            // Post type
+			);
+
+			add_meta_box(
+				CIRCOLO_LISTING_SLUG . '_images',                 // Unique ID
+				'Images',      // Box title
+				array($this, 'images_metabox_callback'),  // Content callback, must be of type callable
 				$screen                            // Post type
 			);
 		}
@@ -217,10 +224,14 @@ class Circolo_Listing_Admin {
 	}
 
 	public function custom_box_html() {
+		ob_start();
 		global $post;
 		$order_id = get_post_meta( $post->ID, CIRCOLO_LISTING_SLUG . '_order_id', true );
 		$date_approved = get_post_meta( $post->ID, CIRCOLO_LISTING_SLUG . '_date_approved', true );
-		
+		$force_approved = get_post_meta( $post->ID, CIRCOLO_LISTING_SLUG . '_force_approved', true );
+
+
+
 		// Getting an instance of the order object
 		if(is_numeric($order_id) && $order = wc_get_order( $order_id ) ) {
 			if($order->is_paid())
@@ -237,7 +248,93 @@ class Circolo_Listing_Admin {
 				echo '<p>Date Expire: ' . $expiry_date . '</p>';
 			}
 		} else {
-			echo '<p>Pending</p>';
+			if( $force_approved && $date_approved )
+			{
+				$expiry_date = Circolo_Listing_Helper::calculate_expiry_date($date_approved);
+				echo '<p>Date Approved: ' . $date_approved . '</p>';
+				echo '<p>Date Expire: ' . $expiry_date . '</p>';
+			}else {
+				echo '<p>Pending</p>';
+			}
+		}
+
+		require plugin_dir_path( dirname( __FILE__ ) ) . 'admin/partials/meta-box-status.php';
+        echo  ob_get_clean();
+		//echo '<a class="edit-timestamp" href="#">Date</a>';
+		//echo '<input type="date" class="datetime listing-date-approved" name="_date_approved" value="'.$date_approved.'" />';
+	}
+
+	public function save_status_fields( $post_id ) {
+		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+			return;
+		}
+		$is_autosave = wp_is_post_autosave( $post_id );
+		$is_revision = wp_is_post_revision( $post_id );
+		$is_valid_nonce = ( isset( $_POST[ 'circolo_status_nonce' ] ) && wp_verify_nonce( $_POST[ 'circolo_status_nonce' ], basename( __FILE__ ) ) ) ? 'true' : 'false';
+		
+		if ( $is_autosave || $is_revision || !$is_valid_nonce ) {
+				return;
+		}
+		if ( ! current_user_can( 'edit_post', $post_id ) ) {
+			return;
+		}
+
+		// Correct post type
+		if ( 'circolo_listings' != $_POST['post_type'] ) // here you can set the post type name
+			return;
+
+		if ( array_key_exists( 'force-approve', $_POST ) ) {
+			update_post_meta(
+				$post_id,
+					'circolo_listing_force_approved',
+					1
+				);
+			
+			$approved_date = Circolo_Listing_Helper::current_time();
+			$expire_date = $approved_date->addDays(90);
+
+			update_post_meta(
+				$post_id,
+				'circolo_listing_date_approved',
+				$approved_date
+			);
+
+			update_post_meta(
+				$post_id,
+				'circolo_listing_date_expire',
+				$expire_date
+			);
+		}
+	}
+
+	public function images_save( $post_id ) {
+		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+			return;
+		}
+		$is_autosave = wp_is_post_autosave( $post_id );
+		$is_revision = wp_is_post_revision( $post_id );
+		$is_valid_nonce = ( isset( $_POST[ 'circolo_images_nonce' ] ) && wp_verify_nonce( $_POST[ 'circolo_images_nonce' ], basename( __FILE__ ) ) ) ? 'true' : 'false';
+		
+		if ( $is_autosave || $is_revision || !$is_valid_nonce ) {
+				return;
+		}
+		if ( ! current_user_can( 'edit_post', $post_id ) ) {
+			return;
+		}
+
+		// Correct post type
+		if ( 'circolo_listings' != $_POST['post_type'] ) // here you can set the post type name
+			return;
+
+		
+		for ($x = 1; $x <= 3; $x++) {
+			if ( array_key_exists( 'file-'.$x , $_POST ) && is_numeric( $_POST['file-'.$x] ) && absint( $_POST['file-'.$x] ) > 0 ) {
+				update_post_meta(
+					$post_id,
+					'_image_'.$x,
+					$_POST['file-'.$x]
+				);
+			}
 		}
 	}
 
@@ -332,7 +429,7 @@ class Circolo_Listing_Admin {
 		  return $return;
 	  }
 
-	function set_post_category( $post_id, $post, $update ) {
+	public function set_post_category( $post_id, $post, $update ) {
 		// Only want to set if this is a new post!
 		// if ( $update ){
 		// 	return;
@@ -345,10 +442,16 @@ class Circolo_Listing_Admin {
 
 		$product_id = get_post_meta( $post_id, CIRCOLO_LISTING_SLUG . '_product_id', true );
 		
-		// Get the default term using the slug, its more portable!
-		//$term = get_term_by( 'slug', 'my-custom-term', 'category' );
-	
-		//wp_set_post_terms( $post_id, $term->term_id, 'category', true );
+		if( $product_id ) {
+			// Get the default term using the slug, its more portable!
+			$categories = get_the_terms( $product_id, 'product_cat' );
+			if( isset( $categories[0] ) ){
+				$prod_cat = $categories[0];
+				$category = Circolo_Listing_Helper::get_listing_category_by_slug($prod_cat->slug);
+				wp_set_post_categories($product_id, [$category]);
+			}
+		}
+		
 	}
 
 	public function widget_area() {
@@ -498,5 +601,189 @@ class Circolo_Listing_Admin {
         }
 
 		wp_die();
+	}
+
+	public function images_metabox_callback() {
+		ob_start();
+		global  $post ;
+		$id = $post->ID;
+		$listingImages = [];
+        for ($x = 1; $x <= 3; $x++) {
+            $image = get_post_meta($id, '_image_'.$x);
+            //echo "Is Error: " . is_wp_error( $image[0] );
+            if( !empty($image[0]) && !is_wp_error( $image[0] ) ){
+                $listingImages[$x] = $image;
+            }
+        }
+
+		//echo '<pre>'.print_r($listingImages, true).'</pre>';
+
+		require plugin_dir_path( dirname( __FILE__ ) ) . 'admin/partials/meta-box-images.php';
+		echo  ob_get_clean();
+	}
+
+	public function images_styles_scripts(){
+		global $post;
+		if( 'circolo_listings' != $post->post_type )
+			return;
+
+		?>  
+		<style type="text/css">
+		.gallery_area {
+			float:right;
+		}
+		.image_container {
+			float:left!important;
+			width: 100px;
+			background: url('https://i.hizliresim.com/dOJ6qL.png');
+			height: 100px;
+			background-repeat: no-repeat;
+			background-size: cover;
+			border-radius: 3px;
+			cursor: pointer;
+		}
+		.image_container img{
+			height: 100px;
+			width: 100px;
+			border-radius: 3px;
+		}
+		.clear {
+			clear:both;
+		}
+		#gallery_wrapper {
+			width: 100%;
+			height: auto;
+			position: relative;
+			display: inline-block;
+		}
+		#gallery_wrapper input[type=text] {
+			width:300px;
+		}
+		#gallery_wrapper .gallery_single_row {
+			float: left;
+			display:inline-block;
+			width: 100px;
+			position: relative;
+			margin-right: 8px;
+			margin-bottom: 20px;
+		}
+		.dolu {
+			display: inline-block!important;
+		}
+		#gallery_wrapper label {
+			padding:0 6px;
+		}
+		.button.remove {
+			background: none;
+			color: #f1f1f1;
+			position: absolute;
+			border: none;
+			top: 4px;
+			right: 7px;
+			font-size: 1.2em;
+			padding: 0px;
+			box-shadow: none;
+		}
+		.button.remove:hover {
+			background: none;
+			color: #fff;
+		}
+		.button.add {
+			background: #c3c2c2;
+			color: #ffffff;
+			border: none;
+			box-shadow: none;
+			width: 100px;
+			height: 100px;
+			line-height: 100px;
+			font-size: 4em;
+		}
+		.button.add:hover, .button.add:focus {
+			background: #e2e2e2;
+			box-shadow: none;
+			color: #0f88c1;
+			border: none;
+		}
+		</style>
+		<script defer src="https://use.fontawesome.com/releases/v5.0.8/js/solid.js" integrity="sha384-+Ga2s7YBbhOD6nie0DzrZpJes+b2K1xkpKxTFFcx59QmVPaSA8c7pycsNaFwUK6l" crossorigin="anonymous"></script>
+		<link href = "https://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel = "stylesheet">
+		<script defer src="https://use.fontawesome.com/releases/v5.0.8/js/fontawesome.js" integrity="sha384-7ox8Q2yzO/uWircfojVuCQOZl+ZZBg2D2J5nkpLqzH1HY0C1dHlTKIbpRz/LG23c" crossorigin="anonymous"></script>
+		<script src = "https://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+		<script type="text/javascript">
+			function remove_img(value) {
+				var parent=jQuery(value).parent().parent();
+				var img = parent.find('.gallery_img_img');
+				var input = parent.find('.meta_image_url');
+				//console.log("Parent: ", parent);
+				//console.log("Input: ", input);
+				img.attr('src',"");
+				input.val(0);
+				//parent.remove();
+			}
+			var media_uploader = null;
+			function open_media_uploader_image(obj){
+				media_uploader = wp.media({
+					frame:    "post", 
+					state:    "insert", 
+					multiple: false
+				});
+				media_uploader.on("insert", function(){
+					var json = media_uploader.state().get("selection").first().toJSON();
+					var image_url = json.url;
+					var image_id = json.id;
+					var html = '<img class="gallery_img_img" src="'+image_url+'" height="55" width="55" onclick="open_media_uploader_image_this(this)"/>';
+					console.log(image_url);
+					jQuery(obj).append(html);
+					jQuery(obj).find('.meta_image_url').val(image_id);
+				});
+				media_uploader.open();
+			}
+			function open_media_uploader_image_this(obj){
+				media_uploader = wp.media({
+					frame:    "post", 
+					state:    "insert", 
+					multiple: false
+				});
+				media_uploader.on("insert", function(){
+					var json = media_uploader.state().get("selection").first().toJSON();
+					//console.log("Insert: ", json);
+					var image_url = json.url;
+					var image_id = json.id;
+					//console.log(image_url);
+					jQuery(obj).attr('src',image_url);
+					jQuery(obj).siblings('.meta_image_url').val(image_id);
+				});
+				media_uploader.open();
+			}
+	
+			function open_media_uploader_image_plus(){
+				media_uploader = wp.media({
+					frame:    "post", 
+					state:    "insert", 
+					multiple: true 
+				});
+				media_uploader.on("insert", function(){
+	
+					var length = media_uploader.state().get("selection").length;
+					var images = media_uploader.state().get("selection").models
+	
+					for(var i = 0; i < length; i++){
+						var image_url = images[i].changed.url;
+						var box = jQuery('#master_box').html();
+						jQuery(box).appendTo('#img_box_container');
+						var element = jQuery('#img_box_container .gallery_single_row:last-child').find('.image_container');
+						var html = '<img class="gallery_img_img" src="'+image_url+'" height="55" width="55" onclick="open_media_uploader_image_this(this)"/>';
+						element.append(html);
+						element.find('.meta_image_url').val(image_url);
+						console.log(image_url);		
+					}
+				});
+				media_uploader.open();
+			}
+			jQuery(function() {
+				jQuery("#img_box_container").sortable(); // Activate jQuery UI sortable feature
+			});
+		</script>
+		<?php
 	}
 }

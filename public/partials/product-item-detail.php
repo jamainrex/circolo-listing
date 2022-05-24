@@ -12,4 +12,5 @@
     <div class="product-sub-content">
     The price for sending this posting is <span class="product-price-text"></span> Inc VAT.
     </div>
+    <div class="product-sub-content product-notes"></div>
 </div>

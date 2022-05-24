@@ -2,6 +2,7 @@
     product="<?php echo $product->get_id() ?>"
     data-price="<?php echo $product->get_price() ?>"
     data-name="<?php echo $product->get_name() ?>"
+    data-notes="<?php echo $product->get_attribute( 'Notes' ) ?>"
 >
     <h3 class="product-title">
         <?php echo $product->get_name() ?>

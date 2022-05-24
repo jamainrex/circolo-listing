@@ -63,11 +63,13 @@
 		var name = productEl.data('name');
 		var desc = productEl.find('.product-content').text();
 		var price = productEl.data('price');
+		var notes = productEl.data('notes');
 
 		var detailEl = $('#product_item_detail_wrapper');
 		detailEl.find('.product-title').text(name),
 		detailEl.find('.product-content').text(desc),
 		detailEl.find('.product-price-text').text(price);
+		detailEl.find('.product-notes').text(notes);
 		$('.product-item').hide();
 		detailEl.show();
 		$('#accept-proceed-selected-post-type').show();
