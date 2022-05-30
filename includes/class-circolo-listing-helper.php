@@ -138,9 +138,23 @@ class Circolo_Listing_Helper extends Circolo_Listing
         return Carbon::parse( $datetime )->diffInDays( Circolo_Listing_Helper::current_time() , false);
     }
 
+    public static function day_time_ago( $datetime, $format = 'U', $gmt = false )
+    {
+        $time = wp_date( $format, $datetime->getTimestamp(), $gmt ? new DateTimeZone( 'UTC' ) : null );
+        return sprintf( esc_html__( '%s ago', 'textdomain' ), human_time_diff( $time, current_time( 'timestamp' ) ) );
+    }
+
     public static function remaining_days( $datetime )
     {
         return Carbon::parse( Carbon::createFromTimestamp( current_time( 'timestamp' ) ))->diffInDays( $datetime , false);
+    }
+
+    public static function get_users()
+    {
+        $args = [
+            'orderby'=>'user_nicename'
+        ];
+        return get_users( $args );
     }
     
     public static function get_protected_posts( $args = null, $transient = 'posts', $bypass_transient = false ) : array

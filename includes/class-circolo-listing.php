@@ -177,9 +177,11 @@ class Circolo_Listing {
 		$this->loader->add_action( 'save_post', $plugin_admin, 'save_meta_fields' );
 		$this->loader->add_action( 'save_post', $plugin_admin, 'images_save' );
 		$this->loader->add_action( 'save_post', $plugin_admin, 'save_status_fields' );
+		$this->loader->add_action( 'save_post', $plugin_admin, 'save_listing_owner_field' );
 		$this->loader->add_action( 'new_to_publish', $plugin_admin, 'save_meta_fields' );
 		$this->loader->add_action( 'new_to_publish', $plugin_admin, 'images_save' );
 		$this->loader->add_action( 'new_to_publish', $plugin_admin, 'save_status_fields' );
+		$this->loader->add_action( 'new_to_publish', $plugin_admin, 'save_listing_owner_field' );
 		$this->loader->add_action( 'widgets_init', $plugin_admin, 'widget_area' );
 		$this->loader->add_action( 'save_post', $plugin_admin, 'set_post_category', 10,3 );
 

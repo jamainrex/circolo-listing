@@ -191,6 +191,13 @@ class Circolo_Listing_Admin {
 		$screens = [ 'circolo_listings' ];
 		foreach ( $screens as $screen ) {
 			add_meta_box(
+				CIRCOLO_LISTING_SLUG . '_owner',                 // Unique ID
+				'Listing Owner',      // Box title
+				array($this, 'owner_box_html'),  // Content callback, must be of type callable
+				$screen                            // Post type
+			);
+			
+			add_meta_box(
 				CIRCOLO_LISTING_SLUG . '_product_id',                 // Unique ID
 				'Listing Type',      // Box title
 				array($this, 'post_type_box_html'),  // Content callback, must be of type callable
@@ -210,6 +217,17 @@ class Circolo_Listing_Admin {
 				$screen                            // Post type
 			);
 		}
+	}
+
+	public function owner_box_html() {
+		ob_start();
+        global  $post ;
+        $id = $post->ID;
+		$selected = get_post_meta( $id, CIRCOLO_LISTING_SLUG . '_owner', true );
+		//echo '<pre>'.print_r([$post->ID, $selected], true).'</pre>';
+		$drop_down = $this->generate_users_dropdown( $selected );
+		require plugin_dir_path( dirname( __FILE__ ) ) . 'admin/partials/meta-box-users.php';
+        echo  ob_get_clean();
 	}
 
 	public function post_type_box_html() {
@@ -343,6 +361,35 @@ class Circolo_Listing_Admin {
 		}
 	}
 
+	public function save_listing_owner_field( $post_id ) {
+		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+			return;
+		}
+		$is_autosave = wp_is_post_autosave( $post_id );
+		$is_revision = wp_is_post_revision( $post_id );
+		$is_valid_nonce = ( isset( $_POST[ 'circolo_owner_nonce' ] ) && wp_verify_nonce( $_POST[ 'circolo_owner_nonce' ], basename( __FILE__ ) ) ) ? 'true' : 'false';
+		
+		if ( $is_autosave || $is_revision || !$is_valid_nonce ) {
+				return;
+		}
+		if ( ! current_user_can( 'edit_post', $post_id ) ) {
+			return;
+		}
+
+		// Correct post type
+		if ( 'circolo_listings' != $_POST['post_type'] ) // here you can set the post type name
+			return;
+
+		
+		if ( array_key_exists( 'circolo_listing_owner', $_POST ) ) {
+			update_post_meta(
+				$post_id,
+				'circolo_listing_owner',
+				$_POST['circolo_listing_owner']
+			);
+		}
+	}
+
 	public function save_meta_fields( $post_id ) {
 
 		// verify nonce
@@ -373,6 +420,14 @@ class Circolo_Listing_Admin {
 			);
 		}
 
+		if ( array_key_exists( 'circolo_listing_owner', $_POST ) ) {
+			update_post_meta(
+				$post_id,
+				'circolo_listing_owner',
+				$_POST['circolo_listing_owner']
+			);
+		}
+
 		if ( array_key_exists( 'circolo_listing_order_id', $_POST ) ) {
 			update_post_meta(
 				$post_id,
@@ -380,7 +435,7 @@ class Circolo_Listing_Admin {
 				$_POST['circolo_listing_order_id']
 			);
 		}
-		
+
 	  }
 
 	  protected function get_post_products_custom_field( $value, $id = null )
@@ -408,6 +463,24 @@ class Circolo_Listing_Admin {
 			  $drop_down .= '>' . $product['post_title'] . ' - [#' . $product['ID'] . ']</option>';
 		  }
 		  $drop_down .= '</optgroup>';
+		  $drop_down .= '</select>';
+		  return $drop_down;
+	  }
+
+	  protected function generate_users_dropdown( $selected = array() ) : string
+	  {
+		  $users = Circolo_Listing_Helper::get_users();
+		  //var_dump($users);
+		  //return '';
+		  $drop_down = '<select id="' . CIRCOLO_LISTING_SLUG . '_owner" name="' . CIRCOLO_LISTING_SLUG . '_owner" style="width: 100%">';
+		  $drop_down .= '<option value="">-- SELECT OWNER --</option>'; 
+		  foreach ( $users as $user ) {
+			  $drop_down .= '<option value="' . $user->ID . '"';
+			  if ( (int) $user->ID === (int) $selected ) {
+				  $drop_down .= ' selected="selected"';
+			  }
+			  $drop_down .= '>' . $user->display_name . ' - [ '. $user->user_email .' #' . $user->ID . ']</option>';
+		  }
 		  $drop_down .= '</select>';
 		  return $drop_down;
 	  }
