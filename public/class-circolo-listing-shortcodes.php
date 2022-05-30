@@ -335,8 +335,17 @@ class Circolo_Listing_Shortcodes
             $featured_image = isset( $attachment[0] ) ? wp_get_attachment_url( $attachment[0] ) : '';
             $days_ago = Circolo_Listing_Helper::days_ago( $date_approved );
             $day_time_ago = Circolo_Listing_Helper::day_time_ago( $date_approved );
+            $owner_id = get_post_meta( get_the_ID(), CIRCOLO_LISTING_SLUG . '_owner', true );
+            $owner = get_the_author();
+            
+            if( isset( $owner_id ) && is_numeric( $owner_id ) ){
+                $owner_obj = get_user_by('id', $owner_id);
+                if( $owner_obj )
+                    $owner = $owner_obj->display_name;
+            }
+        
             //echo '<pre>'.print_r([ 'image' => $featured_image, 'date_approved'=>$date_approved, 'expire'=>$date_expire, 'remaining' => $date_remaining, 'category' => $listing_category ], true).'</pre>';
-            //echo '<pre>'.print_r($day_time_ago, true).'</pre>';
+            //echo '<pre>'.print_r($owner->display_name, true).'</pre>';
             //echo '<pre>'.print_r(get_post_meta( get_the_ID() ), true).'</pre>';
             require plugin_dir_path( dirname( __FILE__ ) ) . 'public/partials/marketplace-item.php';
             endwhile;

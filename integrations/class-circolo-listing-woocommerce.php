@@ -246,7 +246,9 @@ class Circolo_Listing_WooCommerce {
 			) );
 
 			$approved_date = Circolo_Listing_Helper::current_time();
-			$expire_date = $approved_date->addDays(90);
+			$expiry_date = Circolo_Listing_Helper::calculate_expiry_date($approved_date);
+			$approved_date_timestamp = Circolo_Listing_Helper::to_date_timestamp($approved_date);
+			$expiry_date_timestamp = Circolo_Listing_Helper::to_date_timestamp($expiry_date);
 
 			update_post_meta(
 				$circolo_listing_id,
@@ -258,6 +260,18 @@ class Circolo_Listing_WooCommerce {
 				$circolo_listing_id,
 				'circolo_listing_date_expire',
 				$expire_date
+			);
+
+			update_post_meta(
+				$post_id,
+				'circolo_listing_date_approved_timestamp',
+				$approved_date_timestamp
+			);
+
+			update_post_meta(
+				$post_id,
+				'circolo_listing_date_expire_timestamp',
+				$expiry_date_timestamp
 			);
 		}
 	}

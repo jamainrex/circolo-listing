@@ -248,8 +248,8 @@ class Circolo_Listing_Admin {
 		$date_approved = get_post_meta( $post->ID, CIRCOLO_LISTING_SLUG . '_date_approved', true );
 		$force_approved = get_post_meta( $post->ID, CIRCOLO_LISTING_SLUG . '_force_approved', true );
 
-
-
+		$date_approved_timestamp = get_post_meta( $post->ID, CIRCOLO_LISTING_SLUG . '_date_approved_timestamp', true );
+		$date_expiry_timestamp = get_post_meta( $post->ID, CIRCOLO_LISTING_SLUG . '_date_expire_timestamp', true );
 		// Getting an instance of the order object
 		if(is_numeric($order_id) && $order = wc_get_order( $order_id ) ) {
 			if($order->is_paid())
@@ -277,8 +277,10 @@ class Circolo_Listing_Admin {
 		}
 
 		//$_approved_date = Circolo_Listing_Helper::current_time();
-		//echo '<pre>'.print_r($date_approved, true).'</pre>';
-		//echo '<pre>'.print_r($_approved_date, true).'</pre>';
+		//$current_timestamp = current_time( 'timestamp' );
+		//echo '<pre>'.print_r($date_approved_timestamp, true).'</pre>';
+		//echo '<pre>'.print_r($date_expiry_timestamp, true).'</pre>';
+		//echo '<pre>'.print_r($current_timestamp, true).'</pre>';
 
 		require plugin_dir_path( dirname( __FILE__ ) ) . 'admin/partials/meta-box-status.php';
         echo  ob_get_clean();
@@ -315,7 +317,8 @@ class Circolo_Listing_Admin {
 			$approved_date = Circolo_Listing_Helper::current_time();
 			$expiry_date = Circolo_Listing_Helper::calculate_expiry_date($approved_date);
 			//$expire_date = $approved_date->addDays(90);
-
+			$approved_date_timestamp = Circolo_Listing_Helper::to_date_timestamp($approved_date);
+			$expiry_date_timestamp = Circolo_Listing_Helper::to_date_timestamp($expiry_date);
 			update_post_meta(
 				$post_id,
 				'circolo_listing_date_approved',
@@ -326,6 +329,18 @@ class Circolo_Listing_Admin {
 				$post_id,
 				'circolo_listing_date_expire',
 				$expire_date
+			);
+
+			update_post_meta(
+				$post_id,
+				'circolo_listing_date_approved_timestamp',
+				$approved_date_timestamp
+			);
+
+			update_post_meta(
+				$post_id,
+				'circolo_listing_date_expire_timestamp',
+				$expiry_date_timestamp
 			);
 		}
 	}
