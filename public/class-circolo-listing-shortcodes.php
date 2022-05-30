@@ -313,6 +313,7 @@ class Circolo_Listing_Shortcodes
             $args['category_name'] = $category;
         }
 
+        wp_enqueue_style( CIRCOLO_LISTING_PLUGIN_NAME . '-marketplace-css', plugin_dir_url( __FILE__ ) . 'css/circolo-listing-marketplace.css', array(), CIRCOLO_LISTING_VERSION, 'all' );
         ob_start();
 
         require plugin_dir_path( dirname( __FILE__ ) ) . 'public/partials/marketplace-header.php';
