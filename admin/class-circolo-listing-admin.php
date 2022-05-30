@@ -258,6 +258,10 @@ class Circolo_Listing_Admin {
 			}
 		}
 
+		//$_approved_date = Circolo_Listing_Helper::current_time();
+		//echo '<pre>'.print_r($date_approved, true).'</pre>';
+		//echo '<pre>'.print_r($_approved_date, true).'</pre>';
+
 		require plugin_dir_path( dirname( __FILE__ ) ) . 'admin/partials/meta-box-status.php';
         echo  ob_get_clean();
 		//echo '<a class="edit-timestamp" href="#">Date</a>';
@@ -291,7 +295,8 @@ class Circolo_Listing_Admin {
 				);
 			
 			$approved_date = Circolo_Listing_Helper::current_time();
-			$expire_date = $approved_date->addDays(90);
+			$expiry_date = Circolo_Listing_Helper::calculate_expiry_date($approved_date);
+			//$expire_date = $approved_date->addDays(90);
 
 			update_post_meta(
 				$post_id,
