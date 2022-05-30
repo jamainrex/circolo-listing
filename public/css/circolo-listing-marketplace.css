@@ -1,0 +1,26 @@
+.listing-preview-header {
+    text-align: center;
+}
+
+.listing-preview-actions {
+    text-align: center;
+    align-content: center;
+    display: inline-flex;
+}
+.listing-preview-actions li {
+    padding: 10px;
+    cursor: pointer;
+    display: inline-flex;
+}
+
+.listing-preview-actions li a {
+    background-color: transparent !important;
+    color: #50563C !important;
+    border: #50563C 2px solid !important;
+    width: 200px;
+}
+
+.listing-preview-actions li a.active {
+    background-color: #50563C !important;
+    color: white !important;
+}

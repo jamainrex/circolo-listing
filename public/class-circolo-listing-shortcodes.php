@@ -395,6 +395,7 @@ class Circolo_Listing_Shortcodes
     public function marketplace_sc( $atts ) {
         
         extract(shortcode_atts(array(
+            'section_id' => '',
             'orderby' => 'date',
             'order' => 'DESC',
             'category' => empty( $_GET['category'] ) ? 'all' : wc_clean( wp_unslash( $_GET['category'] ) )
@@ -430,6 +431,12 @@ class Circolo_Listing_Shortcodes
         //echo '<pre>'.print_r($loop, true).'</pre>';
         echo '<div class="marketplace-container">';
         if ( $loop->have_posts() ) {
+
+            if( is_numeric( $section_id ) ){
+                echo '<div class="circolo-listing-grid-container">';
+                echo '<div class="circolo-listing-grid">';
+            }
+
             while ( $loop->have_posts() ) : $loop->the_post();
             // YOUR CODE
             $date_approved = get_post_meta( get_the_ID(), CIRCOLO_LISTING_SLUG . '_date_approved', true );
@@ -449,8 +456,19 @@ class Circolo_Listing_Shortcodes
             //echo '<pre>'.print_r([ 'image' => $featured_image, 'date_approved'=>$date_approved, 'expire'=>$date_expire, 'remaining' => $date_remaining, 'category' => $listing_category ], true).'</pre>';
             //echo '<pre>'.print_r($owner->display_name, true).'</pre>';
             //echo '<pre>'.print_r(get_post_meta( get_the_ID() ), true).'</pre>';
-            require plugin_dir_path( dirname( __FILE__ ) ) . 'public/partials/marketplace-item.php';
+            if( is_numeric($section_id) ){
+                echo '<div class="circolo-listing-grid-post circolo-listing-grid-column">';
+                echo do_shortcode( '[elementor-template id="'.$section_id.'"]' );
+                echo '</div>';
+            } else {
+                require plugin_dir_path( dirname( __FILE__ ) ) . 'public/partials/marketplace-item.php';
+            }
+
             endwhile;
+
+            if( is_numeric( $section_id ) ){
+                echo '</div></div>';
+            }
 
             $total_pages = $loop->max_num_pages;
 
