@@ -13,7 +13,8 @@
             <?php echo get_woocommerce_currency_symbol() ?> <span class="product-price-text"><?php echo $product->get_price() ?></span>
         </h4>
         <div class="product-sub-content">
-        The price for sending this posting is <span class="product-price-text"><?php echo $product->get_price() ?></span> Inc VAT.
+        The price for this listing is <?php echo get_woocommerce_currency_symbol() ?> <span class="product-price-text"><?php echo $product->get_price() ?></span> Inc VAT.
         </div>
+        <div class="product-sub-content product-notes"><?php echo $product->get_attribute( 'Notes' ) ?></div>
     </div>
 </div>

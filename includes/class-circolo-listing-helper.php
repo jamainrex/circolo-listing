@@ -132,6 +132,16 @@ class Circolo_Listing_Helper extends Circolo_Listing
     {
         return Carbon::parse( $datetime )->addDays(90);
     }
+
+    public static function days_ago( $datetime )
+    {
+        return Carbon::parse( $datetime )->diffInDays( Circolo_Listing_Helper::current_time() , false);
+    }
+
+    public static function remaining_days( $datetime )
+    {
+        return Carbon::parse( Carbon::createFromTimestamp( current_time( 'timestamp' ) ))->diffInDays( $datetime , false);
+    }
     
     public static function get_protected_posts( $args = null, $transient = 'posts', $bypass_transient = false ) : array
     {

@@ -10,6 +10,7 @@ class Circolo_Listing_Shortcodes
         add_shortcode( 'wc-circolo-listing', [ __CLASS__, 'process_shortcode' ] );
         add_shortcode( 'wc-circolo-listing-category-products', [ __CLASS__, 'category_products' ] );
         add_shortcode( 'wc-circolo-listing-post-details-form', [ __CLASS__, 'post_detail_form' ] );
+        add_shortcode( 'circolo-listing-marketplace', [ __CLASS__, 'marketplace_sc' ] );
         $restrict = new Circolo_Listing_Restrict_Content();
         $restrict->register_shortcodes();
     }
@@ -280,5 +281,82 @@ class Circolo_Listing_Shortcodes
         wp_reset_postdata();
     
         return '<div class="woocommerce">' . ob_get_clean() . '</div>';
+    }
+
+    public function marketplace_sc($atts ) {
+        
+        extract(shortcode_atts(array(
+            'orderby' => 'date',
+            'order' => 'DESC',
+            'category' => empty( $_GET['category'] ) ? 'all' : wc_clean( wp_unslash( $_GET['category'] ) )
+        ), $atts));
+
+        $custom_post_types = ['circolo_listings'];
+        $paged = (get_query_var('paged')) ? get_query_var('paged') : 1;
+        $args = array(
+            'post_type' => $custom_post_types,
+            'post_status' => 'publish',
+            'posts_per_page' => -1,
+            'paged' => $paged,
+            'meta_query' =>
+            [ 
+                'relation' => 'AND',
+                [
+                    'key'     => CIRCOLO_LISTING_SLUG . '_date_approved',
+                    'value'   => '',
+                    'compare' => '!=',
+                ] 
+            ],
+        );
+
+        if( $categoy != 'all' && in_array( $category, ['goods', 'poperty', 'experiences', 'services'] ) ) {
+            $args['category_name'] = $category;
+        }
+
+        ob_start();
+
+        require plugin_dir_path( dirname( __FILE__ ) ) . 'public/partials/marketplace-header.php';
+        $loop = new WP_Query( $args );
+        //echo '<pre>'.print_r($loop, true).'</pre>';
+        if ( $loop->have_posts() ) {
+            while ( $loop->have_posts() ) : $loop->the_post();
+            // YOUR CODE
+            $date_approved = get_post_meta( get_the_ID(), CIRCOLO_LISTING_SLUG . '_date_approved', true );
+            $date_expire = Circolo_Listing_Helper::calculate_expiry_date($date_approved);
+            $date_remaining = Circolo_Listing_Helper::remaining_days($date_expire);
+
+            if( $date_remaining < 0 )
+                continue;
+
+            $listing_categories = get_the_category();
+            $listing_category = isset( $listing_categories[0] ) ? $listing_categories[0]->name : '';
+            $attachment = get_post_meta(get_the_ID(), '_thumbnail_id');
+            $featured_image = isset( $attachment[0] ) ? wp_get_attachment_url( $attachment[0] ) : '';
+            $days_ago = Circolo_Listing_Helper::days_ago( $date_approved );
+            //echo '<pre>'.print_r([ 'image' => $featured_image, 'date_approved'=>$date_approved, 'expire'=>$date_expire, 'remaining' => $date_remaining, 'category' => $listing_category ], true).'</pre>';
+            //echo '<pre>'.print_r(the_title(), true).'</pre>';
+            //echo '<pre>'.print_r(get_post_meta( get_the_ID() ), true).'</pre>';
+            require plugin_dir_path( dirname( __FILE__ ) ) . 'public/partials/marketplace-item.php';
+            endwhile;
+
+            $total_pages = $loop->max_num_pages;
+
+            if ($total_pages > 1){
+
+                $current_page = max(1, get_query_var('paged'));
+
+                echo paginate_links(array(
+                    'base' => get_pagenum_link(1) . '%_%',
+                    'format' => '/page/%#%',
+                    'current' => $current_page,
+                    'total' => $total_pages,
+                    'prev_text'    => __('« prev'),
+                    'next_text'    => __('next »'),
+                ));
+            }    
+        }
+
+        wp_reset_postdata();
+        return '<div class="marketplace-wrapper">' . ob_get_clean() . '</div>';
     }
 }

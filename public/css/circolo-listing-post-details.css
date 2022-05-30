@@ -53,6 +53,12 @@
     display: none;
     z-index: 100;
 }
+.preview-image .image-cancel {
+	position: absolute;
+	top: 0;
+    right: 20px;
+    font-size: 20px;
+}
 .preview-image:hover > .image-zone {
     cursor: move;
     opacity: .5;
@@ -78,6 +84,8 @@
 	display: flex;
     justify-content: center;
     align-items: center;
+	overflow:hidden;
+	position: relative;
 }
 #upload-image-launch {
 	color:#50563C;

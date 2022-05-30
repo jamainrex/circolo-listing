@@ -13,7 +13,7 @@
             
             ?>
     <input id="post-type-title" value="<?php echo $product->get_name() ?>" type="hidden" />
-    <input id="post-type-category" value="<?php echo (isset($categories[0]) ? $categories[0]->slug : '')?>" type="hidden" />
+	<input id="post-type-category" value="<?php echo isset($categories[0]) ? $categories[0]->slug : ''?>" type="hidden" />
     <form id="new_post" name="new_post" method="post" action="" enctype="multipart/form-data">
 		<div class="form-container">
 			<div class="image-field">
@@ -92,8 +92,8 @@
 				</p>
 				<p>
 					<label for="short_description">Short Description</label><br />
-					<textarea id="short_description" tabindex="3" name="short_description" cols="50" rows="6"><?php echo $circolo_listing->post_excerpt; ?></textarea>
-					<small>Min 200 Chacters and a Max of 400 Characters</small>
+					<textarea id="short_description" tabindex="3" name="short_description" cols="50" rows="6" minlength="150" maxlength="300"><?php echo $circolo_listing->post_excerpt; ?></textarea>
+					<small>Min 150 Chacters and a Max of 300 Characters</small>
 				</p>
                 <p>
 					<label for="description">Full Description</label><br />
