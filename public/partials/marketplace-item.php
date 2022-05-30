@@ -5,6 +5,6 @@
     <li>Title: <?php echo the_title() ?></li>    
     <li>Short Description: <?php echo the_excerpt() ?></li>
     <li><?php echo $day_time_ago ?></li>
-    <li><?php echo $owner ?></li>
+    <li><?php echo get_the_author() ?></li>
 </ul>
 </div>

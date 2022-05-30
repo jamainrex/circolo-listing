@@ -11,6 +11,7 @@ class Circolo_Listing_Shortcodes
         add_shortcode( 'wc-circolo-listing-category-products', [ __CLASS__, 'category_products' ] );
         add_shortcode( 'wc-circolo-listing-post-details-form', [ __CLASS__, 'post_detail_form' ] );
         add_shortcode( 'circolo-listing-marketplace', [ __CLASS__, 'marketplace_sc' ] );
+        add_shortcode( 'circolo-listing-images', [ __CLASS__, 'image_gallery_sc' ] );
         $restrict = new Circolo_Listing_Restrict_Content();
         $restrict->register_shortcodes();
     }
@@ -283,7 +284,7 @@ class Circolo_Listing_Shortcodes
         return '<div class="woocommerce">' . ob_get_clean() . '</div>';
     }
 
-    public function marketplace_sc($atts ) {
+    public function marketplace_sc( $atts ) {
         
         extract(shortcode_atts(array(
             'orderby' => 'date',
@@ -309,7 +310,7 @@ class Circolo_Listing_Shortcodes
             ],
         );
 
-        if( $categoy != 'all' && in_array( $category, ['goods', 'poperty', 'experiences', 'services'] ) ) {
+        if( $categoy != 'all' && in_array( $category, ['goods', 'property', 'experiences', 'services'] ) ) {
             $args['category_name'] = $category;
         }
 
@@ -319,6 +320,7 @@ class Circolo_Listing_Shortcodes
         require plugin_dir_path( dirname( __FILE__ ) ) . 'public/partials/marketplace-header.php';
         $loop = new WP_Query( $args );
         //echo '<pre>'.print_r($loop, true).'</pre>';
+        echo '<div class="marketplace-container">';
         if ( $loop->have_posts() ) {
             while ( $loop->have_posts() ) : $loop->the_post();
             // YOUR CODE
@@ -335,14 +337,6 @@ class Circolo_Listing_Shortcodes
             $featured_image = isset( $attachment[0] ) ? wp_get_attachment_url( $attachment[0] ) : '';
             $days_ago = Circolo_Listing_Helper::days_ago( $date_approved );
             $day_time_ago = Circolo_Listing_Helper::day_time_ago( $date_approved );
-            $owner_id = get_post_meta( get_the_ID(), CIRCOLO_LISTING_SLUG . '_owner', true );
-            $owner = get_the_author();
-            
-            if( isset( $owner_id ) && is_numeric( $owner_id ) ){
-                $owner_obj = get_user_by('id', $owner_id);
-                if( $owner_obj )
-                    $owner = $owner_obj->display_name;
-            }
         
             //echo '<pre>'.print_r([ 'image' => $featured_image, 'date_approved'=>$date_approved, 'expire'=>$date_expire, 'remaining' => $date_remaining, 'category' => $listing_category ], true).'</pre>';
             //echo '<pre>'.print_r($owner->display_name, true).'</pre>';
@@ -366,8 +360,33 @@ class Circolo_Listing_Shortcodes
                 ));
             }    
         }
+        echo '</div>';
 
         wp_reset_postdata();
         return '<div class="marketplace-wrapper">' . ob_get_clean() . '</div>';
+    }
+
+    public function image_gallery_sc( $atts ) {
+        extract(shortcode_atts(array(
+            'columns' => '3',
+            'size' => 'medium',
+        ), $atts));
+
+        ob_start();
+		global  $post;
+
+        $id = $post->ID;
+        $listingImages = [];
+        for ($x = 1; $x <= 3; $x++) {
+            $image = get_post_meta($id, '_image_'.$x, true);
+            //echo "Is Error: " . is_wp_error( $image[0] );
+            if( !empty($image[0]) && !is_wp_error( $image[0] ) ){
+                $listingImages[$x] = $image;
+            }
+        }
+
+        echo do_shortcode( '[gallery ids="' . implode(",", $listingImages) . '" columns="'.$columns.'" size="'.$size.'"]' );
+
+        return ob_get_clean();
     }
 }

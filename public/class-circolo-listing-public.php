@@ -202,4 +202,17 @@ class Circolo_Listing_Public {
         return false;
     }
 
+	public function the_author( $display_name ) {
+		$owner_id = get_post_meta( get_the_ID(), CIRCOLO_LISTING_SLUG . '_owner', true );
+            
+            if( isset( $owner_id ) && is_numeric( $owner_id ) ){
+                $owner_obj = get_user_by('id', $owner_id);
+                if( $owner_obj ) {
+					$display_name = $owner_obj->display_name;
+				}
+            }
+
+		return $display_name;
+	}
+
 }

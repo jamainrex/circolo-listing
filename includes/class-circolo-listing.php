@@ -214,8 +214,7 @@ class Circolo_Listing {
 		$this->loader->add_action( 'template_redirect', $plugin_public, 'set_product_ids' );
 		$this->loader->add_action( 'template_redirect', $plugin_public, 'restrict_listing' );
 		$this->loader->add_filter( 'the_content', $plugin_public, 'restrict_content' );
-
-		
+		$this->loader->add_filter( 'the_author', $plugin_public, 'the_author', 10, 1 );
 	}
 
 	private function define_woocommerce_hooks() {
