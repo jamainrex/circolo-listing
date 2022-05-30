@@ -10,6 +10,7 @@ class Circolo_Listing_Shortcodes
         add_shortcode( 'wc-circolo-listing', [ __CLASS__, 'process_shortcode' ] );
         add_shortcode( 'wc-circolo-listing-category-products', [ __CLASS__, 'category_products' ] );
         add_shortcode( 'wc-circolo-listing-post-details-form', [ __CLASS__, 'post_detail_form' ] );
+        add_shortcode( 'wc-circolo-listing-post-preview-form', [ __CLASS__, 'post_detail_preview_form' ] );
         add_shortcode( 'circolo-listing-marketplace', [ __CLASS__, 'marketplace_sc' ] );
         add_shortcode( 'circolo-listing-images', [ __CLASS__, 'image_gallery_sc' ] );
         $restrict = new Circolo_Listing_Restrict_Content();
@@ -280,6 +281,113 @@ class Circolo_Listing_Shortcodes
         
         require plugin_dir_path( dirname( __FILE__ ) ) . 'public/partials/shortcode-post-details-form.php';
         wp_reset_postdata();
+    
+        return '<div class="woocommerce">' . ob_get_clean() . '</div>';
+    }
+
+    public function post_detail_preview_form( $atts ) {
+    
+        extract(shortcode_atts(array(
+            'post_id'  => empty( $_GET['post_id'] ) ? '' : wc_clean( wp_unslash( $_GET['post_id'] ) ),
+            'section_id' => '3336'
+        ), $atts));
+
+        wp_enqueue_script('jquery-ui-sortable');
+        wp_enqueue_script( CIRCOLO_LISTING_PLUGIN_NAME . '-post-details-js', plugin_dir_url( __FILE__ ) . 'js/circolo-listing-post-details.js', array( 'jquery' ), CIRCOLO_LISTING_VERSION, false );
+        wp_enqueue_script( CIRCOLO_LISTING_PLUGIN_NAME . '-post-preview-js', plugin_dir_url( __FILE__ ) . 'js/circolo-listing-post-preview.js', array( 'jquery' ), CIRCOLO_LISTING_VERSION, false );
+        wp_enqueue_style( CIRCOLO_LISTING_PLUGIN_NAME . '-post-details-css', plugin_dir_url( __FILE__ ) . 'css/circolo-listing-post-details.css', array(), CIRCOLO_LISTING_VERSION, 'all' );
+        wp_enqueue_style( CIRCOLO_LISTING_PLUGIN_NAME . '-post-preview-css', plugin_dir_url( __FILE__ ) . 'css/circolo-listing-post-preview.css', array(), CIRCOLO_LISTING_VERSION, 'all' );
+        ob_start();
+
+        $errors = [];
+        if( 'POST' == $_SERVER['REQUEST_METHOD'] && !empty( $_POST['action'] ) &&  $_POST['action'] == "f_edit_post" && isset($_POST['pid'])) {
+            //get the old post:
+            $post_to_edit = get_post((int)$_POST['pid']); 
+            $args = [
+                'ID' => (int)$_POST['pid'],
+                'post_title' => $_POST['title'],
+                'post_content' => $_POST['description']
+            ];
+    
+            //save the edited post and return its ID
+            $pid = wp_update_post($args); 
+
+            //image upload
+                if (!function_exists('wp_generate_attachment_metadata')){
+                    require_once(ABSPATH . "wp-admin" . '/includes/image.php');
+                    require_once(ABSPATH . "wp-admin" . '/includes/file.php');
+                    require_once(ABSPATH . "wp-admin" . '/includes/media.php');
+                }
+                if ($_FILES) {
+                    foreach ($_FILES as $file => $array) {
+                        if ($_FILES[$file]['error'] !== UPLOAD_ERR_OK) {
+                            $errors[] = "upload error : " . $_FILES[$file]['error'];
+                        }
+                        $attach_id = media_handle_upload( $file, (int)$_POST['pid'] );
+                    }   
+                }
+                if ($attach_id > 0){
+                    //and if you want to set that image as Post  then use:
+                    update_post_meta((int)$_POST['pid'],'_thumbnail_id',$attach_id);
+                }
+
+            //if( isset( $_FILES['upload'] ) )
+            //   Circolo_Listing_Helper::add_custom_image((int)$_POST['pid'], $_FILES['upload']); /*Call image uploader function*/
+
+            if($pid && empty($errors)) {
+                wp_redirect( site_url( 'create-a-post' ).'/review-for-approval' );
+                exit;
+            }
+        }
+
+        $cart = WC()->cart->get_cart();
+        $cart_item = current($cart);
+        $product_id = $cart_item['product_id'];
+        $product = wc_get_product( $product_id );
+
+        $categories = get_the_terms( $product->get_id(), 'product_cat' );
+
+        //echo '<pre>'.print_r($categories[0]->slug, true).'</pre>';
+
+        $posts = Circolo_Listing_Helper::get_post_associated_with_product_id( $product_id );
+        $circolo_listing = $posts[0];
+
+        $listingImages = [];
+        for ($x = 0; $x <= 4; $x++) {
+            $image = get_post_meta($circolo_listing->ID, '_image_'.$x);
+            //echo "Is Error: " . is_wp_error( $image[0] );
+            if( !empty($image[0]) && !is_wp_error( $image[0] ) ){
+                $listingImages[$x] = $image;
+            }
+                //echo '<pre>'.print_r($image, true).'</pre>';
+
+                //$listingImages[$x] = $image;
+        }
+
+        require plugin_dir_path( dirname( __FILE__ ) ) . 'public/partials/shortcode-post-preview-header.php';
+        
+        echo '<div id="listing-form-tab" class="preview-tab hide-content">';
+        require plugin_dir_path( dirname( __FILE__ ) ) . 'public/partials/shortcode-post-details-form.php';
+        echo '</div>';
+
+
+
+        $args = [
+            'post_type' => 'circolo_listings',
+            'p' => $circolo_listing->ID,   // id of the post you want to query
+            'posts_per_page' => 1,
+        ];
+        // The Query
+        $loop = new WP_Query( $args );
+        // The Loop
+        echo '<div id="listing-preview-tab" class="preview-tab">';
+        if ( $loop->have_posts() ) {
+                while ( $loop->have_posts() ) : $loop->the_post();
+            echo do_shortcode( '[elementor-template id="'.$section_id.'"]' );
+            endwhile;
+        }
+        wp_reset_postdata();
+        echo '</div>';
     
         return '<div class="woocommerce">' . ob_get_clean() . '</div>';
     }
