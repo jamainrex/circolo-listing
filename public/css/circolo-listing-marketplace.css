@@ -24,3 +24,24 @@
     background-color: #50563C !important;
     color: white !important;
 }
+
+.circolo-listing-grid-container {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    -ms-box-orient: vertical;
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -moz-flex;
+    display: -webkit-flex;
+    display: flex;
+    
+    -webkit-flex-wrap: wrap;
+    flex-wrap: wrap;
+}
+
+.circolo-listing-grid-post {
+    max-width: 33.33%;
+    display: inline-flex;
+}

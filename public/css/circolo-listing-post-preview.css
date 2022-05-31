@@ -17,9 +17,29 @@
 }
 
 .listing-preview-actions li a {
-    background-color: gray !important;
+    background-color: white !important;
+    color: black !important;
+    width: 200px;
+}
+
+.show-tab {
+    font-weight: 600 !important;
+    text-transform: uppercase;
 }
 
 .listing-preview-actions li a.active {
-    background-color: #50563C !important;
+    background-color: gray !important;
+    color: white !important;
+}
+
+.woocommerce-form-coupon-toggle {
+    padding-top: 25px;
+}
+
+.woocommerce-error, .woocommerce-info, .woocommerce-message {
+    margin: 0 0 1em;
+}
+
+.woocommerce-message, .woocommerce-info {
+    border-top-color: #51563f;
 }
