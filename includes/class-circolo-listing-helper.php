@@ -418,7 +418,7 @@ class Circolo_Listing_Helper extends Circolo_Listing
             $args = array(
                 'status' => 'publish',
                 'limit' => -1,
-                'orderby' => 'title',
+                'orderby' => 'menu_order',
                 'order' => 'ASC',
                 'category' => array( esc_attr($category) ),
             );
