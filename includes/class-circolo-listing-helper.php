@@ -130,7 +130,7 @@ class Circolo_Listing_Helper extends Circolo_Listing
 
     public static function calculate_expiry_date( $datetime ) : Carbon
     {
-        return Carbon::parse( $datetime )->addDays(1);
+        return Carbon::parse( $datetime )->addDays(90);
     }
 
     public static function days_ago( $datetime )

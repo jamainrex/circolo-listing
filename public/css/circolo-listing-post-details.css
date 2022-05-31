@@ -58,6 +58,7 @@
 	top: 0;
     right: 20px;
     font-size: 20px;
+	z-index: 99;
 }
 .preview-image:hover > .image-zone {
     cursor: move;

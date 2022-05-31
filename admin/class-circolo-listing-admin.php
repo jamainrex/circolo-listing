@@ -402,6 +402,13 @@ class Circolo_Listing_Admin {
 				'circolo_listing_owner',
 				$_POST['circolo_listing_owner']
 			);
+
+			// Update Post Author
+			$arg = array(
+				'ID' => $post_id,
+				'post_author' => (int) $_POST['circolo_listing_owner'],
+			);
+			wp_update_post( $arg );
 		}
 	}
 
@@ -878,5 +885,21 @@ class Circolo_Listing_Admin {
 			});
 		</script>
 		<?php
+	}
+
+	
+	public function add_subscribers_to_dropdown( $query_args ) {
+		
+		//echo '<pre>'.print_r($query_args, true).'</pre>';
+		// Use this array to specify multiple roles to show in dropdown
+		$query_args['role__in'] = array( 'subscriber', 'administrator' );
+	
+		// Use this array to specify multiple roles to hide in dropdown
+		$query_args['role__not_in'] = array( 'editor' );
+	
+		// Unset the 'who' as this defaults to the 'author' role
+		unset( $query_args['who'] );
+	
+		return $query_args;
 	}
 }
