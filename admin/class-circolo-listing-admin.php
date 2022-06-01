@@ -192,7 +192,7 @@ class Circolo_Listing_Admin {
 		foreach ( $screens as $screen ) {
 			add_meta_box(
 				CIRCOLO_LISTING_SLUG . '_owner',                 // Unique ID
-				'Listing Owner',      // Box title
+				'Listing Information',      // Box title
 				array($this, 'owner_box_html'),  // Content callback, must be of type callable
 				$screen                            // Post type
 			);
@@ -224,8 +224,10 @@ class Circolo_Listing_Admin {
         global  $post ;
         $id = $post->ID;
 		$selected = get_post_meta( $id, CIRCOLO_LISTING_SLUG . '_owner', true );
+		$selectedCountry = get_post_meta( $id, CIRCOLO_LISTING_SLUG . '_country', true );
 		//echo '<pre>'.print_r([$post->ID, $selected], true).'</pre>';
 		$drop_down = $this->generate_users_dropdown( $selected );
+		$countries_drop_down = $this->generate_countries_dropdown( $selectedCountry );
 		require plugin_dir_path( dirname( __FILE__ ) ) . 'admin/partials/meta-box-users.php';
         echo  ob_get_clean();
 	}
@@ -502,6 +504,22 @@ class Circolo_Listing_Admin {
 				  $drop_down .= ' selected="selected"';
 			  }
 			  $drop_down .= '>' . $user->display_name . ' - [ '. $user->user_email .' #' . $user->ID . ']</option>';
+		  }
+		  $drop_down .= '</select>';
+		  return $drop_down;
+	  }
+
+	  protected function generate_countries_dropdown( $selected = '' ) : string
+	  {
+		  $countries = Circolo_Listing_Helper::get_countries();
+		  $drop_down = '<select id="' . CIRCOLO_LISTING_SLUG . '_country" name="' . CIRCOLO_LISTING_SLUG . '_country" style="width: 100%">';
+		  $drop_down .= '<option value="">-- SELECT COUNTRY --</option>'; 
+		  foreach ( $countries as $key => $country ) {
+			  $drop_down .= '<option value="' . $key . '"';
+			  if ( $key === $selected ) {
+				  $drop_down .= ' selected="selected"';
+			  }
+			  $drop_down .= '>' . $country . '</option>';
 		  }
 		  $drop_down .= '</select>';
 		  return $drop_down;

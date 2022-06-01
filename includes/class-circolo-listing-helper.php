@@ -161,6 +161,14 @@ class Circolo_Listing_Helper extends Circolo_Listing
         ];
         return get_users( $args );
     }
+
+    public static function get_countries()
+    {
+        if( ! class_exists('WC_Countries') )
+            return [];
+
+        return WC()->countries->get_countries();
+    }
     
     public static function get_protected_posts( $args = null, $transient = 'posts', $bypass_transient = false ) : array
     {

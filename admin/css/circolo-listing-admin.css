@@ -234,3 +234,11 @@ table.dataTable tbody tr.odd {
 .wc-ppp-debug .health-check-debug-tab .site-health-copy-buttons {
     margin: 10px 0;
 }
+
+.listing-info-wrapper {
+    display: flex;
+}
+
+.listing-info-wrapper h4 {
+    font-weight: 600;
+}

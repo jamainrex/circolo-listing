@@ -193,6 +193,11 @@ class Circolo_Listing_Shortcodes
     }
 
     public function post_detail_form( $atts ) {
+
+        if( is_admin() && isset($_GET['action']) && $_GET['action'] == 'edit' ) {
+                //echo 'edit screen';
+                return;
+        }
     
         extract(shortcode_atts(array(
             'post_id'  => empty( $_GET['post_id'] ) ? '' : wc_clean( wp_unslash( $_GET['post_id'] ) )
@@ -288,7 +293,12 @@ class Circolo_Listing_Shortcodes
     }
 
     public function post_detail_preview_form( $atts ) {
-    
+        
+        if( is_admin() && isset($_GET['action']) && $_GET['action'] == 'edit' ) {
+                //echo 'edit screen';
+                return;
+        }
+
         extract(shortcode_atts(array(
             'post_id'  => empty( $_GET['post_id'] ) ? '' : wc_clean( wp_unslash( $_GET['post_id'] ) ),
             'section_id' => '3336'
