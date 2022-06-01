@@ -97,7 +97,19 @@
 				</p>
                 <p>
 					<label for="description">Full Description</label><br />
-					<textarea id="description" tabindex="3" name="description" cols="50" rows="6"><?php echo $circolo_listing->post_content; ?></textarea>
+					<?php
+                        $custom_editor_id = "description";
+                        $custom_editor_name = "description";
+                        $custom_editor_args = array(
+                            'media_buttons' => false, // This setting removes the media button.
+                            'drag_drop_upload' => false,
+                            'textarea_name' => $custom_editor_name, // Set custom name.
+                            'textarea_rows' => 20, //Determine the number of rows.
+                            'quicktags' => false, // Remove view as HTML button.
+                        );
+                        wp_editor( $circolo_listing->post_content, $custom_editor_id, $custom_editor_args );
+                    ?>
+                    
                 </p>
 			</div>
         

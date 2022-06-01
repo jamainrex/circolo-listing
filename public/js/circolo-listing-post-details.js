@@ -173,12 +173,17 @@ $('#upload-image-launch3').on('click', function(e){
   
   $('form#new_post').submit( function(e) {
 	e.preventDefault();
+	//$('#description').trigger('Change');
+	//$('#description').trigger('change');
+	tinyMCE.triggerSave();
 	var data = new FormData(this);
-	console.log("imageFiles: ", imageFiles);
+	//console.log("contents: ", $('#description').val());
 	// data.append('action', 'circolo_listing_save');
 	// data.append('title', $('#title').val());
-	// data.append('description', $('#description').val());
-	console.log($('.preview-image'));
+	//data.append('description', $('#description').val());
+	//console.log($('.preview-image'));
+	//console.log( data.serialize() );
+	//return;
 	$.each( $('.preview-image'), function(i, el) {
 		console.log($(el));
 		if( $(el).data('type') == 'file' ) {

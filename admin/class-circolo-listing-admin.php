@@ -399,18 +399,24 @@ class Circolo_Listing_Admin {
 
 		
 		if ( array_key_exists( 'circolo_listing_owner', $_POST ) ) {
-			update_post_meta(
-				$post_id,
-				'circolo_listing_owner',
-				$_POST['circolo_listing_owner']
-			);
+			$post_info = get_post( $post_id );
+			$owner = $post_info->post_author;
 
-			// Update Post Author
-			$arg = array(
-				'ID' => $post_id,
-				'post_author' => (int) $_POST['circolo_listing_owner'],
-			);
-			wp_update_post( $arg );
+			if( (int) $owner != (int) $_POST['circolo_listing_owner'] ){
+				update_post_meta(
+					$post_id,
+					'circolo_listing_owner',
+					(int) $_POST['circolo_listing_owner']
+				);
+	
+				// Update Post Author
+				$arg = array(
+					'ID' => $post_id,
+					'post_author' => (int) $_POST['circolo_listing_owner'],
+				);
+				wp_update_post( $arg );
+			}
+			
 		}
 
 		if ( array_key_exists( 'circolo_listing_country', $_POST ) ) {
