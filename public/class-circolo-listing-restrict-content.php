@@ -30,7 +30,7 @@ class Circolo_Listing_Restrict_Content
         //The Post ID is null because we use this class for displaying shortcodes as well as within the loop
         if ( is_null( $post_id ) ) {
             $this->post_id = get_the_ID();
-            $this->author_id = get_the_author_ID();
+            $this->author_id = get_the_author_meta('ID');
         } else {
             $this->post_id = $post_id;
             $this->author_id = get_post_field( 'post_author', $post_id );

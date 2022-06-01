@@ -225,7 +225,7 @@ class Circolo_Listing_Admin {
         $id = $post->ID;
 		$selected = get_post_meta( $id, CIRCOLO_LISTING_SLUG . '_owner', true );
 		$selectedCountry = get_post_meta( $id, CIRCOLO_LISTING_SLUG . '_country', true );
-		//echo '<pre>'.print_r([$post->ID, $selected], true).'</pre>';
+		//echo '<pre>'.print_r([$post->ID, $selected, $selectedCountry ], true).'</pre>';
 		$drop_down = $this->generate_users_dropdown( $selected );
 		$countries_drop_down = $this->generate_countries_dropdown( $selectedCountry );
 		require plugin_dir_path( dirname( __FILE__ ) ) . 'admin/partials/meta-box-users.php';
@@ -412,6 +412,14 @@ class Circolo_Listing_Admin {
 			);
 			wp_update_post( $arg );
 		}
+
+		if ( array_key_exists( 'circolo_listing_country', $_POST ) ) {
+			update_post_meta(
+				$post_id,
+				'circolo_listing_country',
+				$_POST['circolo_listing_country']
+			);
+		}
 	}
 
 	public function save_meta_fields( $post_id ) {
@@ -449,6 +457,14 @@ class Circolo_Listing_Admin {
 				$post_id,
 				'circolo_listing_owner',
 				$_POST['circolo_listing_owner']
+			);
+		}
+
+		if ( array_key_exists( 'circolo_listing_country', $_POST ) ) {
+			update_post_meta(
+				$post_id,
+				'circolo_listing_country',
+				$_POST['circolo_listing_country']
 			);
 		}
 
@@ -642,21 +658,28 @@ class Circolo_Listing_Admin {
 		//   echo '<pre>'.print_r($_POST, true).'</pre>';
 		//   echo '<pre>'.print_r($_FILES, true).'</pre>';
         //   wp_die();
-
 		$errors = [];
         if( 'POST' == $_SERVER['REQUEST_METHOD'] && !empty( $_POST['action'] ) &&  $_POST['action'] == "circolo_listing_save" && isset($_POST['pid'])) {
             //get the old post:
             $post_to_edit = get_post((int)$_POST['pid']); 
-        
+			$owner_id = get_current_user_id();
+
             $args = [
                 'ID' => (int)$_POST['pid'],
                 'post_title' => $_POST['title'],
                 'post_content' => $_POST['description'],
-				'post_excerpt' => $_POST['short_description']
+				'post_excerpt' => $_POST['short_description'],
+				'post_author'  => $owner_id,
             ];
     
             //save the edited post and return its ID
             $pid = wp_update_post($args); 
+
+			update_post_meta(
+				(int)$_POST['pid'],
+				'circolo_listing_owner',
+				$owner_id
+			);
 
             //image upload
                 if (!function_exists('wp_generate_attachment_metadata')){
