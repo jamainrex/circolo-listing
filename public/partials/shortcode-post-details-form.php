@@ -19,7 +19,7 @@
 			<div class="image-field">
 				<fieldset class="form-group image-field-form">
                     <input type="file" id="pro-image0" name="file-0" style="display: none;" class="form-control file-image-0" data-formnum="0">
-                    <a href="javascript:void(0)" id="upload-image-launch" class="<?php echo isset($listingImages[0]) ? "hide-upload-btn" : "" ?>">Upload Featured Image</a>
+                    <a href="javascript:void(0)" id="upload-image-launch" class="<?php echo isset($listingImages[0]) ? "hide-upload-btn" : "" ?>">Upload Main Image</a>
 					<div id="preview-featured-image-zone">
                     <?php if( isset($listingImages[0]) ){
                         $listingImage = $listingImages[0];

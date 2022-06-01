@@ -290,5 +290,15 @@ class Circolo_Listing_WooCommerce {
     
         echo '<div class="woocommerce">' . ob_get_clean() . '</div>';
     }
+
+	public function thank_you_page( $order_id ){
+		$order = wc_get_order( $order_id );
+		$url = site_url( 'create-a-listing' ).'/thank-you';
+		
+		if ( ! $order->has_status( 'failed' ) ) {
+			wp_safe_redirect( $url );
+			exit;
+		}
+	}
         
 }

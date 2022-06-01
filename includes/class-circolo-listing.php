@@ -229,6 +229,8 @@ class Circolo_Listing {
 		//$this->loader->add_action('woocommerce_payment_complete', $plugin_wc, 'payment_complete', 10, 1);
 		$this->loader->add_action( 'woocommerce_update_order', $plugin_wc, 'update_order', 10, 1 ); 
 		$this->loader->add_filter( 'woocommerce_add_to_cart_validation', $plugin_wc, 'limit_one_per_order', 10, 2 );
+		$this->loader->add_action( 'woocommerce_thankyou', $plugin_wc, 'thank_you_page' ); 
+		
 	}
 
 	/**
