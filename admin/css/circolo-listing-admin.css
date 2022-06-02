@@ -236,9 +236,18 @@ table.dataTable tbody tr.odd {
 }
 
 .listing-info-wrapper {
-    display: flex;
+    display: inline-block;
 }
 
 .listing-info-wrapper h4 {
     font-weight: 600;
+}
+
+.listing-info-item {
+    display: block;
+    width: 100%;
+}
+
+.select2-container {
+    width: 100% !important;
 }
