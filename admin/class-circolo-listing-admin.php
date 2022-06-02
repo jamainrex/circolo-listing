@@ -235,6 +235,10 @@ class Circolo_Listing_Admin {
 		//var_dump($selectedCountries);
 		//$_selectedCountries = is_serialized( $selectedCountries ) ? maybe_unserialize( $selectedCountries ) : [];
 		//var_dump($_selectedCountries);
+
+		if( !is_array( $selectedCountries ) )
+			$selectedCountries = [$selectedCountries];
+
 		$countries_drop_down = $this->generate_countries_dropdown( $selectedCountries );
 		require plugin_dir_path( dirname( __FILE__ ) ) . 'admin/partials/meta-box-users.php';
         echo  ob_get_clean();
@@ -427,11 +431,11 @@ class Circolo_Listing_Admin {
 			
 		}
 
-		if ( array_key_exists( 'circolo_listing_country[]', $_POST ) ) {
+		if ( array_key_exists( 'circolo_listing_country', $_POST ) ) {
 			update_post_meta(
 				$post_id,
 				'circolo_listing_country',
-				maybe_serialize( $_POST['circolo_listing_country[]'] )
+				maybe_serialize( $_POST['circolo_listing_country'] )
 			);
 		}
 	}
@@ -478,7 +482,7 @@ class Circolo_Listing_Admin {
 			update_post_meta(
 				$post_id,
 				'circolo_listing_country',
-				maybe_serialize( $_POST['circolo_listing_country[]'] )
+				maybe_serialize( $_POST['circolo_listing_country'] )
 			);
 		}
 
