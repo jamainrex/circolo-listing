@@ -68,10 +68,12 @@ class Circolo_Listing_WooCommerce {
         global $post;
 
         $meta_field_data = get_post_meta( $post->ID, 'circolo_listings', true ) ? get_post_meta( $post->ID, 'circolo_listings', true ) : '';
-		$circolo_listing = Circolo_Listing_Helper::get_post( (int) $meta_field_data );
+		if( !empty( $meta_field_data ) && is_numeric( $meta_field_data ) ) {
+			$circolo_listing = Circolo_Listing_Helper::get_post( (int) $meta_field_data );
 
-		if( $circolo_listing ){
-			echo '<a href="'. get_admin_url().'post.php?post='. $circolo_listing['ID'] .'&action=edit">'.$circolo_listing['post_title'].' - '.'[#'.$circolo_listing['ID'].']</a>';
+			if( $circolo_listing ){
+				echo '<a href="'. get_admin_url().'post.php?post='. $circolo_listing['ID'] .'&action=edit">'.$circolo_listing['post_title'].' - '.'[#'.$circolo_listing['ID'].']</a>';
+			}
 		}
     }
 
@@ -295,7 +297,8 @@ class Circolo_Listing_WooCommerce {
 		$order = wc_get_order( $order_id );
 		$url = site_url( 'create-a-listing' ).'/thank-you';
 		
-		if ( ! $order->has_status( 'failed' ) ) {
+		if ( $order->get_status() != 'failed' ) {
+			echo "<script type=\"text/javascript\">window.location = '".$url."'</script>";
 			wp_safe_redirect( $url );
 			exit;
 		}
