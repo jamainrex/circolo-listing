@@ -73,7 +73,12 @@
 		$('.product-item').hide();
 		detailEl.show();
 		$('#accept-proceed-selected-post-type').show();
-
+		
+		var $offset = 200;
+		var $speed = 700;
+		$('html, body').animate({
+			scrollTop: $('#product_item_detail_wrapper').offset().top + $offset
+		  }, $speed);
 	 }
 
 	 $('#next-btn-selected-post-type').on('click', function(e){
