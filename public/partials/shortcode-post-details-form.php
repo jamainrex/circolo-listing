@@ -89,13 +89,15 @@
 			<div class="content-field">
 				<p>
 					<label for="title">Title</label><br />
-					<input type="text" id="title" value="<?php echo $circolo_listing->post_title; ?>" tabindex="1" style="width: 100%;" name="title" required />
-					<small>min 10 characters and max of 50 characters</small>
+					<input type="text" id="title" value="<?php echo $circolo_listing->post_title; ?>" tabindex="1" style="width: 100%;" name="title" minlength="10" maxlength="50" required />
+					<span id="title_char_count" class="char_count">50/50</span>
+                    <small>min 10 characters and max of 50 characters</small>
 				</p>
 				<p>
 					<label for="short_description">Short Description</label><br />
 					<textarea id="short_description" tabindex="3" name="short_description" cols="50" rows="6" minlength="50" maxlength="150" required><?php echo $circolo_listing->post_excerpt; ?></textarea>
-					<small>min 50 characters and a max of 150 characters</small>
+					<span id="short_desc_char_count" class="char_count">150/150</span>
+                    <small>min 50 characters and a max of 150 characters</small>
 				</p>
                 <p>
 					<label for="description">Full Description</label><br />

@@ -3,6 +3,8 @@
   
 var imageFiles = [];
 var limit = 4;
+var maxNumOfChars = 150;
+var maxTitleNumofChars = 50;
 
 	$(document).ready(function() {
 		document.getElementById('pro-image0').addEventListener('change', readImage, false);
@@ -29,7 +31,31 @@ var limit = 4;
 			var category = $("#post-type-category").val();
 			window.location.href = url + "?category="+category;
 		});
+
+		var titleEl = $('#title');
+		titleEl.on("keydown", titleCountCharacters);
+		titleEl.trigger('keydown');
+
+		var shortDescription = $('#short_description');
+		shortDescription.on("keydown", countCharacters);
+		shortDescription.trigger('keydown');
 	  });
+
+	  var countCharacters = function() {
+		var shortDescription = $(this);
+		var characterCounter = $('#short_desc_char_count');
+		var numOfEnteredChars = shortDescription.val().length;
+		var counter = maxNumOfChars - numOfEnteredChars;
+		characterCounter.text( counter + "/150" );
+	};
+
+	var titleCountCharacters = function() {
+		var titleEl = $(this);
+		var characterCounter = $('#title_char_count');
+		var numOfEnteredChars = titleEl.val().length;
+		var counter = maxTitleNumofChars - numOfEnteredChars;
+		characterCounter.text( counter + "/50" );
+	};
   
 	  function readImage() {
 		//console.log("readImage");
