@@ -83,33 +83,24 @@
                     <?php } ?>
                     </div>
                 </fieldset>
+				<small>We suggest using landscape or square images</small>
+				<?php echo do_shortcode('[elementor-template id="4026"]') ?>
 			</div>
 			<div class="content-field">
 				<p>
 					<label for="title">Title</label><br />
-					<input type="text" id="title" value="<?php echo $circolo_listing->post_title; ?>" tabindex="1" style="width: 100%;" name="title" />
-					<small>Min 10 characters and Max of 50 Characters you are at 10</small>
+					<input type="text" id="title" value="<?php echo $circolo_listing->post_title; ?>" tabindex="1" style="width: 100%;" name="title" required />
+					<small>min 10 characters and max of 50 characters</small>
 				</p>
 				<p>
 					<label for="short_description">Short Description</label><br />
-					<textarea id="short_description" tabindex="3" name="short_description" cols="50" rows="6" minlength="150" maxlength="300"><?php echo $circolo_listing->post_excerpt; ?></textarea>
-					<small>Min 150 Chacters and a Max of 300 Characters</small>
+					<textarea id="short_description" tabindex="3" name="short_description" cols="50" rows="6" minlength="50" maxlength="150" required><?php echo $circolo_listing->post_excerpt; ?></textarea>
+					<small>min 50 characters and a max of 150 characters</small>
 				</p>
                 <p>
 					<label for="description">Full Description</label><br />
-					<?php
-                        $custom_editor_id = "description";
-                        $custom_editor_name = "description";
-                        $custom_editor_args = array(
-                            'media_buttons' => false, // This setting removes the media button.
-                            'drag_drop_upload' => false,
-                            'textarea_name' => $custom_editor_name, // Set custom name.
-                            'textarea_rows' => 20, //Determine the number of rows.
-                            'quicktags' => false, // Remove view as HTML button.
-                        );
-                        wp_editor( $circolo_listing->post_content, $custom_editor_id, $custom_editor_args );
-                    ?>
-                    
+                    <textarea id="description" tabindex="3" name="description" cols="50" rows="6" minlength="50" required><?php echo $circolo_listing->post_content; ?></textarea>
+					
                 </p>
 			</div>
         

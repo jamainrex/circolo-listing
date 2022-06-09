@@ -383,16 +383,18 @@ class Circolo_Listing_Shortcodes
         echo '</div>';
 
 
-
+        global $wp_query;
         $args = [
             'post_type' => 'circolo_listings',
             'p' => $circolo_listing->ID,   // id of the post you want to query
-            'posts_per_page' => 1,
+            'post_status' => 'draft',
+            'posts_per_page' => -1,
         ];
         // The Query
         $loop = new WP_Query( $args );
         // The Loop
         echo '<div id="listing-preview-tab" class="preview-tab">';
+        //echo '<pre>'.print_r($loop,true).'</pre>';
         if ( $loop->have_posts() ) {
                 while ( $loop->have_posts() ) : $loop->the_post();
             echo do_shortcode( '[elementor-template id="'.$section_id.'"]' );
@@ -418,7 +420,7 @@ class Circolo_Listing_Shortcodes
         $args = array(
             'post_type' => $custom_post_types,
             'post_status' => 'publish',
-            'posts_per_page' => -1,
+            'posts_per_page' => 12,
             'paged' => $paged,
             'meta_query' =>
             [ 

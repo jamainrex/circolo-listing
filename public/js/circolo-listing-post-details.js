@@ -175,7 +175,7 @@ $('#upload-image-launch3').on('click', function(e){
 	e.preventDefault();
 	//$('#description').trigger('Change');
 	//$('#description').trigger('change');
-	tinyMCE.triggerSave();
+	//tinyMCE.triggerSave();
 	var data = new FormData(this);
 	//console.log("contents: ", $('#description').val());
 	// data.append('action', 'circolo_listing_save');

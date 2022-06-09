@@ -234,10 +234,17 @@ class Circolo_Listing_Admin {
 		$selectedCountries = get_post_meta( $id, CIRCOLO_LISTING_SLUG . '_country', true );
 		//var_dump($selectedCountries);
 		//$_selectedCountries = is_serialized( $selectedCountries ) ? maybe_unserialize( $selectedCountries ) : [];
+		
 		//var_dump($_selectedCountries);
 
-		if( !is_array( $selectedCountries ) )
-			$selectedCountries = [$selectedCountries];
+		//if( !is_array( $selectedCountries ) )
+		//	$selectedCountries = [$selectedCountries];
+
+		if( is_serialized( $selectedCountries ) ) {
+			$selectedCountries = maybe_unserialize($selectedCountries);
+		}
+
+		//echo '<pre>'.print_r(['Countries',$selectedCountries], true).'</pre>';
 
 		$countries_drop_down = $this->generate_countries_dropdown( $selectedCountries );
 		require plugin_dir_path( dirname( __FILE__ ) ) . 'admin/partials/meta-box-users.php';
@@ -478,13 +485,13 @@ class Circolo_Listing_Admin {
 			);
 		}
 
-		if ( array_key_exists( 'circolo_listing_country', $_POST ) ) {
-			update_post_meta(
-				$post_id,
-				'circolo_listing_country',
-				maybe_serialize( $_POST['circolo_listing_country'] )
-			);
-		}
+		// if ( array_key_exists( 'circolo_listing_country[]', $_POST ) ) {
+		// 	update_post_meta(
+		// 		$post_id,
+		// 		'circolo_listing_country',
+		// 		maybe_serialize( $_POST['circolo_listing_country'] )
+		// 	);
+		// }
 
 		if ( array_key_exists( 'circolo_listing_order_id', $_POST ) ) {
 			update_post_meta(
