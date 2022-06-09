@@ -679,6 +679,24 @@ class Circolo_Listing_Admin {
 			wp_die();
 	}
 
+	public function cancel_listing() {
+		global $woocommerce; 
+		
+		$data = array(
+			'post' => $_POST,
+			'success' => true,
+			'redirect_url' => site_url( 'create-a-listing' ),
+		);
+
+		wp_delete_post( (int) $_POST['pid'] );
+		//$woocommerce->cart->empty_cart(); 
+		WC()->cart->empty_cart();
+
+		echo wp_send_json($data);
+
+		wp_die();
+	}
+
 	public function save_listing() {
 		//   echo '<pre>'.print_r($_POST, true).'</pre>';
 		//   echo '<pre>'.print_r($_FILES, true).'</pre>';

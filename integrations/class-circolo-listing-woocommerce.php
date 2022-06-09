@@ -293,6 +293,15 @@ class Circolo_Listing_WooCommerce {
         echo '<div class="woocommerce">' . ob_get_clean() . '</div>';
     }
 
+	public function order_total() {
+		ob_start();
+
+        require plugin_dir_path( dirname( __FILE__ ) ) . 'public/partials/checkout-order-total.php';
+        echo '<div id="order_review" class="woocommerce-checkout-review-order">' . ob_get_clean() . '</div>';
+	}
+
+
+
 	public function thank_you_page( $order_id ){
 		$order = wc_get_order( $order_id );
 		$url = site_url( 'create-a-listing' ).'/thank-you';

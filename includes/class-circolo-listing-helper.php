@@ -133,6 +133,11 @@ class Circolo_Listing_Helper extends Circolo_Listing
         return Carbon::parse( $datetime )->addDays(90);
     }
 
+    public static function get_date_subDays( $days = 2 ) : Carbon
+    {
+        return Circolo_Listing_Helper::current_time()->subDays( $days );
+    }
+
     public static function days_ago( $datetime )
     {
         return Carbon::parse( $datetime )->diffInDays( Circolo_Listing_Helper::current_time() , false);
@@ -318,6 +323,74 @@ class Circolo_Listing_Helper extends Circolo_Listing
         $category = get_term_by('slug', $slug, 'category');
 
         return $category;
+    }
+
+    public static function user_save_listing() {
+        $errors = [];
+        if( 'POST' == $_SERVER['REQUEST_METHOD'] && !empty( $_POST['action'] ) &&  $_POST['action'] == "circolo_listing_save" && isset($_POST['pid'])) {
+            //get the old post:
+            $post_to_edit = get_post((int)$_POST['pid']); 
+			$owner_id = get_current_user_id();
+
+            $args = [
+                'ID' => (int)$_POST['pid'],
+                'post_title' => $_POST['title'],
+                'post_content' => $_POST['description'],
+				'post_excerpt' => $_POST['short_description'],
+				'post_author'  => $owner_id,
+            ];
+    
+            //save the edited post and return its ID
+            $pid = wp_update_post($args); 
+
+			update_post_meta(
+				(int)$_POST['pid'],
+				'circolo_listing_owner',
+				$owner_id
+			);
+
+            //image upload
+                if (!function_exists('wp_generate_attachment_metadata')){
+                    require_once(ABSPATH . "wp-admin" . '/includes/image.php');
+                    require_once(ABSPATH . "wp-admin" . '/includes/file.php');
+                    require_once(ABSPATH . "wp-admin" . '/includes/media.php');
+                }
+                if ($_FILES) {
+					for( $x = 0; $x <= 4; $x++ ){
+						if( isset( $_POST['file-'.$x] ) )
+							update_post_meta((int)$_POST['pid'],'_image_'.$x, $_POST['file-'.$x]);
+						else
+							update_post_meta((int)$_POST['pid'],'_image_'.$x, "");
+					}
+
+                    foreach ($_FILES as $file => $array) {
+						if( $file == 'thumbnail' )
+							continue;
+
+						if ($_FILES[$file]['error'] !== UPLOAD_ERR_OK) {
+							//$errors[] = "upload error : " . $_FILES[$file]['error'];
+							continue;
+						}
+		
+						$fname = explode('-', $file);
+
+                         
+                        $attach_id = media_handle_upload( $file, (int)$_POST['pid'] );
+
+						if( $attach_id > 0 && isset( $fname[1] ) && is_numeric( $fname[1] ) ) {
+							update_post_meta((int)$_POST['pid'],'_image_'.$fname[1],$attach_id);
+						}
+
+						if ($attach_id > 0 && isset( $fname[1] ) && is_numeric( $fname[1] ) && $fname[1] == 0){
+							//and if you want to set that image as Post  then use:
+							update_post_meta((int)$_POST['pid'],'_thumbnail_id',$attach_id);
+						}
+                    }   
+                }
+                
+        }
+
+        return $errors;
     }
     
     public static function md_array_diff( $arraya, $arrayb )

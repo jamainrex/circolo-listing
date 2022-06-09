@@ -14,6 +14,7 @@ class Circolo_Listing_Shortcodes
         add_shortcode( 'circolo-listing-marketplace', [ __CLASS__, 'marketplace_sc' ] );
         add_shortcode( 'circolo-listing-images', [ __CLASS__, 'image_gallery_sc' ] );
         add_shortcode( 'circolo-listing-my-listings', [ __CLASS__, 'my_listings_sc' ] );
+        add_shortcode( 'circolo-listing-approved-date', [ __CLASS__, 'approved_date_sc' ] );
         
         $restrict = new Circolo_Listing_Restrict_Content();
         $restrict->register_shortcodes();
@@ -209,58 +210,15 @@ class Circolo_Listing_Shortcodes
         ob_start();
 
         $errors = [];
-        if( 'POST' == $_SERVER['REQUEST_METHOD'] && !empty( $_POST['action'] ) &&  $_POST['action'] == "f_edit_post" && isset($_POST['pid'])) {
-            //get the old post:
-            $post_to_edit = get_post((int)$_POST['pid']); 
+        //$errors = Circolo_Listing_Helper::user_save_listing();
         
-            //echo '<pre>'.print_r($_FILES, true).'</pre>';
-            //exit();
-            //do you validation
-            //...
-            //...
-        
-        
-            // Add the content of the form to $post_to_edit array
-            //$post_to_edit['post_title'] = $_POST['title'];
-            //$post_to_edit['post_content'] = $_POST['description'];
-            $args = [
-                'ID' => (int)$_POST['pid'],
-                'post_title' => $_POST['title'],
-                'post_content' => $_POST['description']
-            ];
-    
-            //save the edited post and return its ID
-            $pid = wp_update_post($args); 
-
-            //image upload
-                if (!function_exists('wp_generate_attachment_metadata')){
-                    require_once(ABSPATH . "wp-admin" . '/includes/image.php');
-                    require_once(ABSPATH . "wp-admin" . '/includes/file.php');
-                    require_once(ABSPATH . "wp-admin" . '/includes/media.php');
-                }
-                if ($_FILES) {
-                    foreach ($_FILES as $file => $array) {
-                        if ($_FILES[$file]['error'] !== UPLOAD_ERR_OK) {
-                            $errors[] = "upload error : " . $_FILES[$file]['error'];
-                        }
-                        $attach_id = media_handle_upload( $file, (int)$_POST['pid'] );
-                    }   
-                }
-                if ($attach_id > 0){
-                    //and if you want to set that image as Post  then use:
-                    update_post_meta((int)$_POST['pid'],'_thumbnail_id',$attach_id);
-                }
-
-            //if( isset( $_FILES['upload'] ) )
-            //   Circolo_Listing_Helper::add_custom_image((int)$_POST['pid'], $_FILES['upload']); /*Call image uploader function*/
-
-            if($pid && empty($errors)) {
-                wp_redirect( site_url( 'create-a-post' ).'/review-for-approval' );
-                exit;
-            }
-        }
-
         $cart = WC()->cart->get_cart();
+        //echo '<pre>'.print_r($cart, true).'</pre>';
+        if(empty($cart)) {
+            wp_redirect( site_url( 'create-a-listing' ) );
+            exit;
+            //wp_exit();
+        }
         $cart_item = current($cart);
         $product_id = $cart_item['product_id'];
         $product = wc_get_product( $product_id );
@@ -353,6 +311,11 @@ class Circolo_Listing_Shortcodes
         }
 
         $cart = WC()->cart->get_cart();
+        if(empty($cart)) {
+            wp_redirect( site_url( 'create-a-listing' ) );
+            exit;
+            //wp_exit();
+        }
         $cart_item = current($cart);
         $product_id = $cart_item['product_id'];
         $product = wc_get_product( $product_id );
@@ -495,8 +458,8 @@ class Circolo_Listing_Shortcodes
                     'format' => '/page/%#%',
                     'current' => $current_page,
                     'total' => $total_pages,
-                    'prev_text'    => __('« prev'),
-                    'next_text'    => __('next »'),
+                    'prev_text'    => __('&larr;'),
+                    'next_text'    => __('&rarr;'),
                 ));
             }    
         }
@@ -526,6 +489,28 @@ class Circolo_Listing_Shortcodes
         }
 
         echo do_shortcode( '[gallery ids="' . implode(",", $listingImages) . '" columns="'.$columns.'" size="'.$size.'"]' );
+
+        return ob_get_clean();
+    }
+
+    public function approved_date_sc( $atts ) {
+        extract(shortcode_atts(array(
+           
+        ), $atts));
+
+        ob_start();
+		global  $post;
+
+        $id = $post->ID;
+        $date_approved = get_post_meta( $id, CIRCOLO_LISTING_SLUG . '_date_approved', true );
+        if( $date_approved ) {
+            //echo "Date Approved: ".$date_approved;
+            echo Circolo_Listing_Helper::day_time_ago( $date_approved );
+        }
+        else {
+            //echo "Date Not Approve";
+            echo Circolo_Listing_Helper::day_time_ago( Circolo_Listing_Helper::get_date_subDays() );
+        }
 
         return ob_get_clean();
     }

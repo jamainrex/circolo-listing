@@ -108,9 +108,11 @@
         
             
 		</div>
-        <div class="preview-btn"><input type="submit" value="PREVIEW POST" tabindex="6" id="submit" name="submit" /></div>
+        <div class="preview-btn">
+            <input type="button" value="CANCEL" tabindex="6" id="cancel-btn" name="cancel" />
+            <input type="submit" value="PREVIEW POST" tabindex="6" id="submit" name="submit" /></div>
         <input type="hidden" name="action" value="circolo_listing_save" />
-        <input type="hidden" name="pid" value="<?php echo $circolo_listing->ID; ?>" />
+        <input type="hidden" id="pid" name="pid" value="<?php echo $circolo_listing->ID; ?>" />
         <?php wp_nonce_field( 'new-post' ); ?>
     </form>
 </div>

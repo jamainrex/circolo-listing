@@ -20,6 +20,10 @@ var maxTitleNumofChars = 50;
 			imageFiles.splice(no,1);
 			$("#upload-image-launch"+no).removeClass('hide-upload-btn');
 			$("#pro-image"+no).val('');
+
+			if( no === 0 ) {
+				$("#upload-image-launch").removeClass('hide-upload-btn');
+			}
 		});
 
 		var postTypeTitle = $('#post-type-title').val();
@@ -254,7 +258,8 @@ $('#upload-image-launch3').on('click', function(e){
 
 	//console.log(this);
 	//console.log($(this));
-
+	var submitBtn = $('#submit');
+	var cancelBtn = $('#cancel-btn');
 	$.ajax({
 		type: 'post',
 		url: circolo_ajax.url,
@@ -265,12 +270,84 @@ $('#upload-image-launch3').on('click', function(e){
 		enctype: 'multipart/form-data',
 		beforeSend: function (response) {
 			console.log("BeforeSend: ", response);
+			submitBtn.attr('disabled','disabled');
+			submitBtn.val('PLEASE WAIT WHILE SAVING...');
+			submitBtn.addClass('loading-btn');
+
+			cancelBtn.attr('disabled', 'disabled');
+			cancelBtn.val(' ');
+			cancelBtn.addClass('loading-btn');
 		},
 		complete: function (response) {
 			console.log("Complete: ", response);
+			submitBtn.attr('disabled',false);
+			submitBtn.val('PREVIEW POST');
+			submitBtn.removeClass('loading-btn');
+
+			cancelBtn.attr('disabled', false);
+			cancelBtn.val('CANCEL');
+			cancelBtn.removeClass('loading-btn');
 		},
 		success: function (response) {
 			console.log("Success: ", response);
+			submitBtn.attr('disabled',false);
+			submitBtn.val('PREVIEW POST');
+			submitBtn.removeClass('loading-btn');
+
+			cancelBtn.attr('disabled', false);
+			cancelBtn.val('CANCEL');
+			cancelBtn.removeClass('loading-btn');
+
+			if(response.success) {
+				window.location.href = response.redirect_url;
+			}
+
+			if( response.error )
+				alert("Whoops something went wrong! Please Try again!");
+		},
+	});
+  });
+
+  $('#cancel-btn').on('click', function(e) {
+	  e.preventDefault();
+	  var data = new FormData();
+	  data.append('action', 'circolo_listing_cancel');
+	  data.append('pid', $('#pid').val() );
+	 
+	  var submitBtn = $('#submit');
+	  var cancelBtn = $('#cancel-btn');
+	  $.ajax({
+		type: 'post',
+		url: circolo_ajax.url,
+		data: data,
+		processData: false,
+		contentType: false,
+		cache: false,
+		beforeSend: function (response) {
+			console.log("BeforeSend: ", response);
+			submitBtn.attr('disabled','disabled');
+			cancelBtn.attr('disabled', 'disabled');
+			submitBtn.val('PLEASE WAIT...');
+			cancelBtn.val(' ');
+			submitBtn.addClass('loading-btn');
+			cancelBtn.addClass('loading-btn');
+		},
+		complete: function (response) {
+			console.log("Complete: ", response);
+			submitBtn.attr('disabled',false);
+			cancelBtn.attr('disabled', false);
+			submitBtn.val('PREVIEW POST');
+			cancelBtn.val('CANCEL');
+			submitBtn.removeClass('loading-btn');
+			cancelBtn.removeClass('loading-btn');
+		},
+		success: function (response) {
+			console.log("Success: ", response);
+			submitBtn.attr('disabled',false);
+			cancelBtn.attr('disabled', false);
+			submitBtn.val('PREVIEW POST');
+			submitBtn.removeClass('loading-btn');
+			cancelBtn.removeClass('loading-btn');
 			if(response.success) {
 				window.location.href = response.redirect_url;
 			}

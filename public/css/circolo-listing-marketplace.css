@@ -54,6 +54,23 @@
 	display: flex;
 }
 
+.marketplace-container{
+    text-align:center;
+}
+
+.page-numbers{
+	color: #50563c;
+	text-align: center;
+	font-family: "Be Vietnam Pro", Sans-serif;
+	font-size: 18px;
+	font-weight: 400;
+	line-height: 24px;
+}
+
+.page-numbers .current{
+	color: #000;
+}
+
 @media only screen and (min-width:768px) and (max-width:1024px) {
 	.circolo-listing-grid-post {
 		max-width:50%;
