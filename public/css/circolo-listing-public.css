@@ -99,11 +99,13 @@
     padding: 12px 32px 12px 32px;
 	color:#ffffff;
 }
-.accept-button {
+.accept-button, .accept-button-text {
 	display:none;
 }
 
-
+#accept-proceed-text {
+    padding-top: 10px;
+}
 
 @media only screen and (max-width:480px) {
 	#product_items_wrapper, #product_item_detail_wrapper {

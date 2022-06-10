@@ -13,6 +13,7 @@
 		<a id="next-btn-selected-post-type" href="#" class="next-button" role="button">Next</a>
 
 		<a id="accept-proceed-selected-post-type" href="#" class="accept-button" role="button">ACCEPT & PROCEED</a>
+		<p id="accept-proceed-text" class="accept-button-text"><small>Your listing will be live for 3 months.</small></p>
 	</div>
 
 </div>

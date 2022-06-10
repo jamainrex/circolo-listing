@@ -73,6 +73,7 @@
 		$('.product-item').hide();
 		detailEl.show();
 		$('#accept-proceed-selected-post-type').show();
+		$('#accept-proceed-text').show();
 		
 		var $offset = 150;
 		var $speed = 700;
