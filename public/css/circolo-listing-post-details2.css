@@ -1,0 +1,205 @@
+.preview-images-zone {
+    width: 100%;
+    border: 1px solid #ddd;
+    height: 98%;
+    display: flex;
+    padding: 5px 5px 5px 5px;
+    position: relative;
+    overflow:hidden;
+	background-color: #DBDACF;
+	margin-top: 5px;
+}
+.preview-images-zone-addtl {
+    min-height: 115px;
+    /* height: 44%; */
+    position: relative;
+    margin: auto 0;
+}
+.preview-images-zone-addtl > .preview-image {
+    width: 100% !important;
+}
+
+.preview-images-zone > .preview-image.preview-show-0 {
+    height: 98%;
+    width: 100%;
+    position: relative;
+    margin-right: 5px;
+}
+.preview-images-zone > .preview-image.preview-show-1, 
+.preview-images-zone > .preview-image.preview-show-2, 
+.preview-images-zone > .preview-image.preview-show-3 {
+    height: 98%;
+    width: 100%;
+    position: relative;
+    margin-right: 5px;
+    float: left;
+    margin-bottom: 5px;
+}
+
+.preview-images-zone > .preview-image > .image-zone {
+    width: 100%;
+    height: 100%;
+}
+.preview-images-zone > .preview-image > .image-zone > img {
+    width: 100%;
+    height: 100%;
+	object-fit: cover;
+}
+.preview-images-zone > .preview-image > .tools-edit-image {
+    position: absolute;
+    z-index: 100;
+    color: #fff;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 10px;
+    display: none;
+}
+.preview-images-zone > .preview-image > .image-cancel {
+    font-size: 18px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-weight: bold;
+    margin-right: 10px;
+    cursor: pointer;
+    display: none;
+    z-index: 100;
+}
+
+.preview-image .image-cancel {
+	position: absolute;
+	top: -10px;
+    right: 5px;
+    font-size: 20px;
+	z-index: 9999;
+}
+.preview-image:hover > .image-zone {
+    cursor: move;
+    opacity: .5;
+}
+.preview-image:hover > .tools-edit-image,
+.preview-image:hover > .image-cancel {
+    display: block;
+}
+.form-container {
+	background-color:#ffffff;
+	padding: 20px 20px 100px;
+}
+.image-field {
+	display: inline-block;
+    width: 48%;
+    margin-right: 2%;
+    vertical-align: top;
+}
+
+.image-field-form {
+	height: 420px;
+    background-color: #DBDACF;
+	display: flex;
+    justify-content: center;
+    align-items: center;
+	overflow:hidden;
+	position: relative;
+    padding-top: 20px;
+}
+#upload-image-launch {
+	color:#50563C;
+	background-color:#ffffff;
+	padding: 10px 20px;
+    position: absolute;
+    z-index: 100;
+}
+
+#upload-image-launch1, #upload-image-launch2, #upload-image-launch3 {
+    color: #50563C;
+    background-color: #ffffff;
+    padding: 10px 20px;
+    position: relative;
+    /* z-index: 100; */
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.content-field {
+	display: inline-block;
+    width: 48%;
+}
+
+/* #wp-description-editor-container *, .wp-editor-container *, #wp-description-editor-container, .wp-editor-container {
+    font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif !important;
+    font-weight: inherit;
+    font-size: 15px;
+    font-size: 1rem;
+} */
+
+/* #postbox *, .image-field *, .content-field * {
+	font-family: "Be Vietnam Pro", Sans-serif;
+} */
+.preview-btn {
+	text-align:center;
+	margin-top:50px;
+}
+
+.hide-upload-btn {
+    display: none !important;
+}
+
+.image-field-item {
+    height: 150px;
+    width: 32.5%;
+    display: inline-block;
+}
+
+.char_count {
+    float: right;
+    font-size: small;
+}
+
+.loading-btn {
+    background-color: gray !important;
+}
+
+#cancel-btn {
+    background-color: lightgray;
+}
+
+@media only screen and (max-width:1180px) {
+    .preview-image.preview-show-0 {
+        max-height: 48vh;
+    }
+}
+
+@media only screen and (max-width:600px) {
+	.image-field {
+		width: 100%;
+		display:block;
+		margin-right: 0;
+	}
+	.image-field-form {
+		height: 300px;
+	}
+	.image-field-item.image-field-form {
+		height:100px;
+	}
+	.content-field {
+		display:block;
+		width: 100%;
+	}
+	.preview-image .image-cancel {
+		top: -15px;
+    	right: 15px;
+    	font-size: 30px;
+	}
+    .preview-image.preview-show-0 {
+        max-height: 38vh;
+    }
+}
+
+@media only screen and (max-width:400px) {
+    .preview-image.preview-show-0 {
+        max-height: 28vh;
+    }
+}

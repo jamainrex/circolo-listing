@@ -206,7 +206,7 @@ class Circolo_Listing_Shortcodes
 
         wp_enqueue_script('jquery-ui-sortable');
         wp_enqueue_script( CIRCOLO_LISTING_PLUGIN_NAME . '-post-details-js', plugin_dir_url( __FILE__ ) . 'js/circolo-listing-post-details.js', array( 'jquery' ), CIRCOLO_LISTING_VERSION, false );
-        wp_enqueue_style( CIRCOLO_LISTING_PLUGIN_NAME . '-post-details-css', plugin_dir_url( __FILE__ ) . 'css/circolo-listing-post-details.css', array(), CIRCOLO_LISTING_VERSION, 'all' );
+        wp_enqueue_style( CIRCOLO_LISTING_PLUGIN_NAME . '-post-details-css', plugin_dir_url( __FILE__ ) . 'css/circolo-listing-post-details2.css', array(), CIRCOLO_LISTING_VERSION, 'all' );
         ob_start();
 
         $errors = [];
@@ -244,7 +244,7 @@ class Circolo_Listing_Shortcodes
 
         
         
-        require plugin_dir_path( dirname( __FILE__ ) ) . 'public/partials/shortcode-post-details-form.php';
+        require plugin_dir_path( dirname( __FILE__ ) ) . 'public/partials/shortcode-post-details-form2.php';
         wp_reset_postdata();
     
         return '<div class="woocommerce">' . ob_get_clean() . '</div>';
@@ -265,7 +265,7 @@ class Circolo_Listing_Shortcodes
         wp_enqueue_script('jquery-ui-sortable');
         wp_enqueue_script( CIRCOLO_LISTING_PLUGIN_NAME . '-post-details-js', plugin_dir_url( __FILE__ ) . 'js/circolo-listing-post-details.js', array( 'jquery' ), CIRCOLO_LISTING_VERSION, false );
         wp_enqueue_script( CIRCOLO_LISTING_PLUGIN_NAME . '-post-preview-js', plugin_dir_url( __FILE__ ) . 'js/circolo-listing-post-preview.js', array( 'jquery' ), CIRCOLO_LISTING_VERSION, false );
-        wp_enqueue_style( CIRCOLO_LISTING_PLUGIN_NAME . '-post-details-css', plugin_dir_url( __FILE__ ) . 'css/circolo-listing-post-details.css', array(), CIRCOLO_LISTING_VERSION, 'all' );
+        wp_enqueue_style( CIRCOLO_LISTING_PLUGIN_NAME . '-post-details-css', plugin_dir_url( __FILE__ ) . 'css/circolo-listing-post-details2.css', array(), CIRCOLO_LISTING_VERSION, 'all' );
         wp_enqueue_style( CIRCOLO_LISTING_PLUGIN_NAME . '-post-preview-css', plugin_dir_url( __FILE__ ) . 'css/circolo-listing-post-preview.css', array(), CIRCOLO_LISTING_VERSION, 'all' );
         ob_start();
 
@@ -342,7 +342,7 @@ class Circolo_Listing_Shortcodes
         require plugin_dir_path( dirname( __FILE__ ) ) . 'public/partials/shortcode-post-preview-header.php';
         
         echo '<div id="listing-form-tab" class="preview-tab hide-content">';
-        require plugin_dir_path( dirname( __FILE__ ) ) . 'public/partials/shortcode-post-details-form.php';
+        require plugin_dir_path( dirname( __FILE__ ) ) . 'public/partials/shortcode-post-details-form2.php';
         echo '</div>';
 
 

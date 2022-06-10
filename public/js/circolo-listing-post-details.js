@@ -1,3 +1,16 @@
+var cancelImage = function() {
+	//alert('remove');
+	let no = $(this).data('no');
+	$(".preview-image.preview-show-"+no).remove();
+	imageFiles.splice(no,1);
+	$("#upload-image-launch"+no).removeClass('hide-upload-btn');
+	$("#pro-image"+no).val('');
+
+	if( no === 0 ) {
+		$("#upload-image-launch").removeClass('hide-upload-btn');
+	}
+};
+
 (function( $ ) {
 	'use strict';
   
@@ -7,24 +20,14 @@ var maxNumOfChars = 150;
 var maxTitleNumofChars = 50;
 
 	$(document).ready(function() {
+
 		document.getElementById('pro-image0').addEventListener('change', readImage, false);
 		document.getElementById('pro-image1').addEventListener('change', readAddImage, false);
 		document.getElementById('pro-image2').addEventListener('change', readAddImage, false);
 		document.getElementById('pro-image3').addEventListener('change', readAddImage, false);
-		readAddImage
 
 		//$( ".preview-images-zone" ).sortable();
-		$(document).on('click', '.image-cancel', function() {
-			let no = $(this).data('no');
-			$(".preview-image.preview-show-"+no).remove();
-			imageFiles.splice(no,1);
-			$("#upload-image-launch"+no).removeClass('hide-upload-btn');
-			$("#pro-image"+no).val('');
-
-			if( no === 0 ) {
-				$("#upload-image-launch").removeClass('hide-upload-btn');
-			}
-		});
+		$(document).on('click', '.image-cancel', cancelImage);
 
 		var postTypeTitle = $('#post-type-title').val();
 		$("#post-details-header").find('h3.elementor-heading-title').append($('<span>: '+postTypeTitle+'</span>'));
@@ -44,6 +47,19 @@ var maxTitleNumofChars = 50;
 		shortDescription.on("keydown", countCharacters);
 		shortDescription.trigger('keydown');
 	  });
+
+	  var cancelImage = function() {
+		//alert('remove');
+		let no = $(this).data('no');
+		$(".preview-image.preview-show-"+no).remove();
+		imageFiles.splice(no,1);
+		$("#upload-image-launch"+no).removeClass('hide-upload-btn');
+		$("#pro-image"+no).val('');
+
+		if( no === 0 ) {
+			$("#upload-image-launch").removeClass('hide-upload-btn');
+		}
+	};
 
 	  var countCharacters = function() {
 		var shortDescription = $(this);
@@ -65,6 +81,7 @@ var maxTitleNumofChars = 50;
 		//console.log("readImage");
 		//console.log($(this));
 		var num = 0;
+
 	  if (window.File && window.FileList && window.FileReader) {
 		  var files = event.target.files; //FileList object
 		  var output = $("#preview-featured-image-zone");
@@ -75,13 +92,14 @@ var maxTitleNumofChars = 50;
 		  	return;
 		  }
 				
+		  output.on('click', '.image-cancel', cancelImage);
 			var picReader = new FileReader();
 		  	picReader.addEventListener('load', function (event) {
 		  		  var picFile = event.target;
 		  		  console.log("File: ", picFile);
 		  		  var html =  '<div class="preview-image preview-show-' + num + '" data-type="file" data-file="'+num+'">' +
 		  		  			  //'<input type="file" id="img-'+num+'" name="image['+num+']" style="display: none;" />'+
-		  					  '<div class="image-cancel" data-no="' + num + '">x</div>' +
+		  					  '<div class="image-cancel" onclick="cancelImage" data-no="' + num + '">x</div>' +
 		  					  '<div class="image-zone"><img id="pro-img-' + num + '" src="' + picFile.result + '"></div>' +
 		  					  '</div>';
 	
@@ -101,6 +119,7 @@ var maxTitleNumofChars = 50;
 	  //console.log($(this));
 	  var num = $(this).data('formnum');
 	  console.log("file-",num);
+	 
 	  if (window.File && window.FileList && window.FileReader) {
 		  var files = event.target.files; //FileList object
 		  var output = $("#preview-image-zone-"+num);
@@ -117,7 +136,7 @@ var maxTitleNumofChars = 50;
 		  		  console.log("File: ", picFile);
 		  		  var html =  '<div class="preview-image preview-show-' + num + '" data-type="file" data-file="'+num+'">' +
 		  		  			  //'<input type="file" id="img-'+num+'" name="image['+num+']" style="display: none;" />'+
-		  					  '<div class="image-cancel" data-no="' + num + '">x</div>' +
+		  					  '<div class="image-cancel" onclick="cancelImage" data-no="' + num + '">x</div>' +
 		  					  '<div class="image-zone"><img id="pro-img-' + num + '" src="' + picFile.result + '"></div>' +
 		  					  '</div>';
 	
