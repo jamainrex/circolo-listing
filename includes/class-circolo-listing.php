@@ -122,6 +122,7 @@ class Circolo_Listing {
 		 * The class responsible for defining all actions that occur in the admin area.
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-circolo-listing-admin.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-circolo-listing-favorites.php';
 
 		/**
 		 * The class responsible for defining all actions that occur in the WooCommerce Integration
@@ -198,6 +199,9 @@ class Circolo_Listing {
 
 		$this->loader->add_action('wp_ajax_circolo_listing_cancel', $plugin_admin, 'cancel_listing');
 		$this->loader->add_action('wp_ajax_nopriv_circolo_listing_cancel', $plugin_admin, 'cancel_listing');
+		
+		$this->loader->add_action('wp_ajax_circolo_listing_user_favorites', $plugin_admin, 'user_favorites');
+		$this->loader->add_action('wp_ajax_nopriv_circolo_listing_user_favorites', $plugin_admin, 'user_favorites');
 		
 	}
 

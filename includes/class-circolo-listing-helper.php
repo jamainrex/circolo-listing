@@ -2,6 +2,7 @@
 
 use  Carbon\Carbon;
 use CIRCOLO\Circolo_Listing_Restrict_Content;
+use CIRCOLO\Circolo_Listing_Favorites;
 
 class Circolo_Listing_Helper extends Circolo_Listing
 {
@@ -729,6 +730,39 @@ class Circolo_Listing_Helper extends Circolo_Listing
     public static function search_protected_posts_by_id( $id, $array )
     {
         return array_search( $id, array_column( $array, 'ID' ) );
+    }
+
+
+    public static function post_user_favorites( $user_id = null ) {
+        return $userFavorites = new Circolo_Listing_Favorites($user_id);
+    }
+
+    public static function get_user_favorites( $user_id = null ): array {
+        $user_id = ( is_null($user_id) ) ? get_current_user_id() : $user_id;
+        // Get any existing copy of our transient data
+        $user_favorites_transient = 'user_favorites_' . $user_id;
+        $user_favorites = get_transient( $user_favorites_transient );
+        if ( false === ( $user_favorites ) || !is_array($user_favorites) ) {
+            // It wasn't there, so regenerate the data and save the transient
+            $user_favorites = get_user_meta($user_id, CIRCOLO_LISTING_SLUG . '_favorites', true);
+            if( !is_array( $user_favorites ) ) $user_favorites = [];
+            set_transient( $user_favorites_transient, $user_favorites );
+
+            return $user_favorites;
+        }
+        
+        // Use the data like you would have normally...
+        return $user_favorites;
+    }
+
+    public static function add_user_favorite( $listing_id, $user_id = null ) {
+        $userFavorites = new Circolo_Listing_Favorites($user_id);
+        $userFavorites->addFavorite( $listing_id );
+    }
+
+    public static function remove_user_favorite( $listing_id, $user_id = null ) {
+        $userFavorites = new Circolo_Listing_Favorites($user_id);
+        $userFavorites->removeFavorite( $listing_id );
     }
 
 }
