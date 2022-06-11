@@ -2,7 +2,7 @@
 
 namespace CIRCOLO;
 
-class Circolo_Listing_Favorites 
+class Circolo_Listing_Public_Favorites 
 {
 
     public $current_user;
@@ -21,7 +21,7 @@ class Circolo_Listing_Favorites
     /**
 	* Get Logged In User Favorites
 	*/
-	public function getFavorites( $user_id = null )
+	public function getFavorites( $user_id = null ): array
 	{
 		$user_id = ( is_null($user_id) ) ? get_current_user_id() : $user_id;
 		$favorites = get_user_meta($user_id, CIRCOLO_LISTING_SLUG . '_favorites');
@@ -45,5 +45,14 @@ class Circolo_Listing_Favorites
 
 
 		update_user_meta( intval(get_current_user_id()), CIRCOLO_LISTING_SLUG . '_favorites', $favorites );
+	}
+
+	public function addFavorite( $listing_id, $user_id = null ) {
+		$favorites = $this->getFavorites($user_id);
+		if ( !in_array( $listing_id, array_keys( $favorites )) && $listing = get_post((int)$listing_id)  ) {
+			$favorites[$listing_id] = $listing;
+		}
+
+		$this->updateUserMeta( $favorites );
 	}
 }

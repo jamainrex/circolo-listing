@@ -697,6 +697,64 @@ class Circolo_Listing_Admin {
 		wp_die();
 	}
 
+	public function user_favorites() {
+        if( 
+			'POST' == $_SERVER['REQUEST_METHOD'] && 
+			!empty( $_POST['action'] ) && 
+			$_POST['action'] == "circolo_listing_user_favorites" && 
+			isset($_POST['pid']) && isset($_POST['add']) ) 
+			{
+				
+
+				$action = $_POST['add'] == 'true' ? 1 : 0;
+				$user_id = get_current_user_id();
+				$userFavorites =  Circolo_Listing_Helper::post_user_favorites($user_id);
+				// $userFavorites->addFavorite((int)$_POST['pid']);
+				// echo wp_send_json( ['user'=>$userFavorites] );
+				// wp_die();
+				// try{
+				// 	$userFavorites = new Circolo_Listing_Favorites( $user_id );
+				// } catch( \Exception $e ) {
+				// 	echo wp_send_json( $e );
+				// 	wp_die();
+				// }
+
+				
+				if( !$action ) {
+					$userFavorites->removeFavorite((int)$_POST['pid']);
+					//Circolo_Listing_Helper::add_user_favorite((int)$_POST['pid'], $user_id);
+					$data = array(
+						'success' => true,
+						'message' => 'Listing Removed to Favorites',
+						//'meta' => get_user_meta($user_id, CIRCOLO_LISTING_SLUG . '_favorites', true),
+						'favorites' => Circolo_Listing_Helper::get_user_favorites($user_id)
+					);
+					echo wp_send_json($data);
+				}
+				elseif( $action ) {
+					$userFavorites->addFavorite((int)$_POST['pid']);
+					//Circolo_Listing_Helper::removed_user_favorite((int)$_POST['pid'], $user_id);
+					$data = array(
+						'success' => true,
+						'message' => 'Listing Added to Favorites',
+						//'meta' => get_user_meta($user_id, CIRCOLO_LISTING_SLUG . '_favorites', true),
+						'favorites' => Circolo_Listing_Helper::get_user_favorites($user_id)
+					);
+					echo wp_send_json($data);
+				}
+				else {
+					$data = array(
+						'error' => true,
+						'message' => 'Oops! Something went wrong!'
+					);
+					echo wp_send_json($data);
+				}
+
+			}
+
+		wp_die();
+	}
+
 	public function save_listing() {
 		//   echo '<pre>'.print_r($_POST, true).'</pre>';
 		//   echo '<pre>'.print_r($_FILES, true).'</pre>';

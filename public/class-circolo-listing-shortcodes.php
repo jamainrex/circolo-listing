@@ -15,6 +15,7 @@ class Circolo_Listing_Shortcodes
         add_shortcode( 'circolo-listing-images', [ __CLASS__, 'image_gallery_sc' ] );
         add_shortcode( 'circolo-listing-my-listings', [ __CLASS__, 'my_listings_sc' ] );
         add_shortcode( 'circolo-listing-approved-date', [ __CLASS__, 'approved_date_sc' ] );
+        add_shortcode( 'circolo-listing-marketplace-favorite-btn', [ __CLASS__, 'get_favorites_button' ] );
         
         $restrict = new Circolo_Listing_Restrict_Content();
         $restrict->register_shortcodes();
@@ -400,9 +401,12 @@ class Circolo_Listing_Shortcodes
             $args['category_name'] = $category;
         }
 
+        wp_enqueue_script( CIRCOLO_LISTING_PLUGIN_NAME . '-marketplace-favorites-js', plugin_dir_url( __FILE__ ) . 'js/circolo-listing-favorites.js', array( 'jquery' ), CIRCOLO_LISTING_VERSION, false );
         wp_enqueue_style( CIRCOLO_LISTING_PLUGIN_NAME . '-marketplace-css', plugin_dir_url( __FILE__ ) . 'css/circolo-listing-marketplace.css', array(), CIRCOLO_LISTING_VERSION, 'all' );
+        wp_enqueue_style( CIRCOLO_LISTING_PLUGIN_NAME . '-marketplace-fontawesome-css', 'https://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css', array(), CIRCOLO_LISTING_VERSION, 'all' );
+        //https://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css
         ob_start();
-
+        $user_favorites = Circolo_Listing_Helper::get_user_favorites();
         require plugin_dir_path( dirname( __FILE__ ) ) . 'public/partials/marketplace-header.php';
         $loop = new WP_Query( $args );
         //echo '<pre>'.print_r($loop, true).'</pre>';
@@ -576,5 +580,23 @@ class Circolo_Listing_Shortcodes
         return '<div class="mylistings-wrapper">' . ob_get_clean() . '</div>';
 
         //[elementor-template id="3456"]
+    }
+
+    public function get_favorites_button( $atts ) {
+        global $current_user;
+
+        extract(shortcode_atts(array(
+        ), $atts));
+
+        ob_start();
+        global  $post;
+
+        $post_id = $post->ID;
+        $user_favorites = Circolo_Listing_Helper::get_user_favorites();
+        //'<pre>'.print_r( array_keys( $user_favorites ), true ).'</pre>';
+        $isFavorite = in_array( $post_id, array_keys( $user_favorites )) ? true : false;
+
+        require plugin_dir_path( dirname( __FILE__ ) ) . 'public/partials/shortcode-favorite-button.php';
+        return ob_get_clean();
     }
 }
