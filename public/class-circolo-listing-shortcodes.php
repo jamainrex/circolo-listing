@@ -492,7 +492,7 @@ class Circolo_Listing_Shortcodes
             }
         }
 
-        echo do_shortcode( '[gallery ids="' . implode(",", $listingImages) . '" columns="'.$columns.'" size="'.$size.'"]' );
+        echo do_shortcode( '[gallery link="file" ids="' . implode(",", $listingImages) . '" columns="'.$columns.'" size="'.$size.'"]' );
 
         return ob_get_clean();
     }
