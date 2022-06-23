@@ -14,7 +14,23 @@
     flex-wrap: wrap;
 }
 
+.circolo-listing-grid {
+	width: 100%;
+}
 .circolo-listing-grid-post {
     max-width: 33.33%;
-    display: inline-flex;
+    display: flex;
+}
+
+@media only screen and (max-width:768px) {
+	.circolo-listing-grid-post {
+		max-width: 50%;
+	}
+}
+
+@media only screen and (max-width:480px) {
+	.circolo-listing-grid-post {
+		max-width: 100%;
+		display: block;
+	}
 }

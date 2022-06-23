@@ -1,0 +1,31 @@
+/* Favorite Button */
+.add-fav {
+    display: inline-block;
+    padding: 5px;
+    cursor: pointer;
+    /* border: 1px solid #ccc; */
+    /* background: -webkit-linear-gradient(top, #fff, #ddd) #ddd; */
+    position: relative;
+    transition: all 0.5s ease;
+    /* border-radius: 3px; */
+    /* box-shadow: inset 0 -1px 1px #eee; */
+  }
+  /* .add-fav:hover {
+    background: -webkit-linear-gradient(top, #fff, #ccc) #ddd;
+  } */
+  .add-fav .icon-star {
+    font-size: 24px;
+    color: #666;
+    position: relative;
+    transition: all 0.5s ease-in-out;
+  }
+  .add-fav input[type=checkbox] {
+    position: absolute;
+    opacity: 0;
+  }
+  
+  .add-fav input[type=checkbox]:checked + .icon-star {
+    color: orange;
+  }
+
+  /* End of Favorite Button */

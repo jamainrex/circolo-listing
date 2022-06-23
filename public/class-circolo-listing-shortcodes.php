@@ -16,6 +16,7 @@ class Circolo_Listing_Shortcodes
         add_shortcode( 'circolo-listing-my-listings', [ __CLASS__, 'my_listings_sc' ] );
         add_shortcode( 'circolo-listing-approved-date', [ __CLASS__, 'approved_date_sc' ] );
         add_shortcode( 'circolo-listing-marketplace-favorite-btn', [ __CLASS__, 'get_favorites_button' ] );
+        add_shortcode( 'circolo-listing-my-favorite-listings', [ __CLASS__, 'my_favorites_listings_sc' ] );
         
         $restrict = new Circolo_Listing_Restrict_Content();
         $restrict->register_shortcodes();
@@ -598,5 +599,73 @@ class Circolo_Listing_Shortcodes
 
         require plugin_dir_path( dirname( __FILE__ ) ) . 'public/partials/shortcode-favorite-button.php';
         return ob_get_clean();
+    }
+
+    public function my_favorites_listings_sc( $atts ) {
+        global $current_user;
+
+        extract(shortcode_atts(array(
+            'section_id' => '3456',
+            'orderby' => 'date',
+            'order' => 'DESC',
+        ), $atts));
+
+        $custom_post_types = ['circolo_listings'];
+        $user_favorites = Circolo_Listing_Helper::get_user_favorites();
+        $args = array(
+            'post_type' => $custom_post_types,
+            'post__in' => array_keys($user_favorites),
+            'post_status' => 'publish',
+            'posts_per_page' => -1,
+            //'author' => get_current_user_id(),
+            'meta_query' =>
+            [ 
+                'relation' => 'AND',
+                [
+                    'key'     => CIRCOLO_LISTING_SLUG . '_date_approved',
+                    'value'   => '',
+                    'compare' => '!=',
+                ] 
+            ],
+        );
+
+        wp_enqueue_script( CIRCOLO_LISTING_PLUGIN_NAME . '-marketplace-favorites-js', plugin_dir_url( __FILE__ ) . 'js/circolo-listing-favorites.js', array( 'jquery' ), CIRCOLO_LISTING_VERSION, false );
+        wp_enqueue_style( CIRCOLO_LISTING_PLUGIN_NAME . '-favorites-mylistings-css', plugin_dir_url( __FILE__ ) . 'css/circolo-listing-favorites.css', array(), CIRCOLO_LISTING_VERSION, 'all' );
+        wp_enqueue_style( CIRCOLO_LISTING_PLUGIN_NAME . '-mylistings-css', plugin_dir_url( __FILE__ ) . 'css/circolo-listing-my-listings.css', array(), CIRCOLO_LISTING_VERSION, 'all' );
+        wp_enqueue_style( CIRCOLO_LISTING_PLUGIN_NAME . '-marketplace-fontawesome-css', 'https://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css', array(), CIRCOLO_LISTING_VERSION, 'all' );
+        ob_start();
+        $loop = new WP_Query( $args );
+        //echo '<pre>'.print_r($loop, true).'</pre>';
+        echo '<div class="marketplace-container">';
+        if ( $loop->have_posts() ) {
+
+            echo '<div class="circolo-listing-grid-container">';
+            echo '<div class="circolo-listing-grid">';
+
+            while ( $loop->have_posts() ) : $loop->the_post();
+            // YOUR CODE
+            $date_approved = get_post_meta( get_the_ID(), CIRCOLO_LISTING_SLUG . '_date_approved', true );
+            $date_expire = Circolo_Listing_Helper::calculate_expiry_date($date_approved);
+            $date_remaining = Circolo_Listing_Helper::remaining_days($date_expire);
+
+            if( $date_remaining < 0 )
+                continue;
+
+            echo '<div class="circolo-listing-grid-post circolo-listing-grid-column">';
+            echo do_shortcode( '[elementor-template id="'.$section_id.'"]', true );
+            echo '</div>';
+            
+            endwhile;
+
+            echo '</div></div>';
+        } else {
+            echo '<p>No Listing Found.</p>';
+        }
+        echo '</div>';
+
+        wp_reset_postdata();
+        return '<div class="mylistings-wrapper">' . ob_get_clean() . '</div>';
+
+        //[elementor-template id="3456"]
     }
 }
