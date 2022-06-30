@@ -377,25 +377,36 @@ class Circolo_Listing_Shortcodes
             'section_id' => '',
             'orderby' => 'date',
             'order' => 'DESC',
-            'category' => empty( $_GET['category'] ) ? 'all' : wc_clean( wp_unslash( $_GET['category'] ) )
+            'category' => empty( $_GET['category'] ) ? 'all' : wc_clean( wp_unslash( $_GET['category'] ) ),
+            'country' => empty( $_GET['country'] ) ? 'all' : wc_clean( wp_unslash( $_GET['country'] ) )
         ), $atts));
 
         $custom_post_types = ['circolo_listings'];
         $paged = (get_query_var('paged')) ? get_query_var('paged') : 1;
+        $meta_query = [ 
+            'relation' => 'AND',
+            [
+                'key'     => CIRCOLO_LISTING_SLUG . '_date_approved',
+                'value'   => '',
+                'compare' => '!=',
+            ]
+        ];
+
+        if( $country != 'all' ) {
+            $meta_query[] = [
+                'key'     => CIRCOLO_LISTING_SLUG . '_country',
+                '_key_compare' => 'LIKE',
+                'value' => $country,
+                'compare' => 'LIKE',
+            ];  
+        }
+
         $args = array(
             'post_type' => $custom_post_types,
             'post_status' => 'publish',
             'posts_per_page' => 12,
             'paged' => $paged,
-            'meta_query' =>
-            [ 
-                'relation' => 'AND',
-                [
-                    'key'     => CIRCOLO_LISTING_SLUG . '_date_approved',
-                    'value'   => '',
-                    'compare' => '!=',
-                ] 
-            ],
+            'meta_query' => $meta_query
         );
 
         if( $categoy != 'all' && in_array( $category, ['goods', 'property', 'experiences', 'services'] ) ) {

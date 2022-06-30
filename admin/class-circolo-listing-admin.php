@@ -552,6 +552,7 @@ class Circolo_Listing_Admin {
 
 	  protected function generate_countries_dropdown( $selected = array() ) : string
 	  {
+		  if( ! is_array( $selected ) ) $selected = [ $selected ];
 		  $countries = Circolo_Listing_Helper::get_countries();
 		  $drop_down = '<select class="circolo-listing-countries" id="' . CIRCOLO_LISTING_SLUG . '_country" name="' . CIRCOLO_LISTING_SLUG . '_country[]" multiple="multiple">';
 		  $drop_down .= '<option value="">-- SELECT COUNTRY --</option>'; 
