@@ -71,6 +71,19 @@
 	color: #000;
 }
 
+.marketplace-header {
+	display: flex;
+    flex: 1 1 50%;
+    justify-content: center;
+    align-content: center;
+}
+.marketplace-header-countries {
+	padding:10px;
+}
+.marketplace-header .search-filter, .marketplace-header select {
+	padding: 0.5em;
+}
+
 /* Favorite Button */
 .add-fav {
     display: inline-block;

@@ -378,7 +378,8 @@ class Circolo_Listing_Shortcodes
             'orderby' => 'date',
             'order' => 'DESC',
             'category' => empty( $_GET['category'] ) ? 'all' : wc_clean( wp_unslash( $_GET['category'] ) ),
-            'country' => empty( $_GET['country'] ) ? 'all' : wc_clean( wp_unslash( $_GET['country'] ) )
+            'country' => empty( $_GET['country'] ) ? 'all' : wc_clean( wp_unslash( $_GET['country'] ) ),
+            'keyword' => empty( $_GET['keyword'] ) ? '' : wc_clean( wp_unslash( $_GET['keyword'] ) )
         ), $atts));
 
         $custom_post_types = ['circolo_listings'];
@@ -409,16 +410,32 @@ class Circolo_Listing_Shortcodes
             'meta_query' => $meta_query
         );
 
+        if( $keyword && !empty( $keyword) ) {
+            $args['s'] = $keyword;
+        }
+
         if( $categoy != 'all' && in_array( $category, ['goods', 'property', 'experiences', 'services'] ) ) {
             $args['category_name'] = $category;
         }
 
+        wp_enqueue_script( CIRCOLO_LISTING_PLUGIN_NAME . '-marketplace-js', plugin_dir_url( __FILE__ ) . 'js/circolo-listing-marketplace.js', array( 'jquery' ), CIRCOLO_LISTING_VERSION, false );
         wp_enqueue_script( CIRCOLO_LISTING_PLUGIN_NAME . '-marketplace-favorites-js', plugin_dir_url( __FILE__ ) . 'js/circolo-listing-favorites.js', array( 'jquery' ), CIRCOLO_LISTING_VERSION, false );
         wp_enqueue_style( CIRCOLO_LISTING_PLUGIN_NAME . '-marketplace-css', plugin_dir_url( __FILE__ ) . 'css/circolo-listing-marketplace.css', array(), CIRCOLO_LISTING_VERSION, 'all' );
         wp_enqueue_style( CIRCOLO_LISTING_PLUGIN_NAME . '-marketplace-fontawesome-css', 'https://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css', array(), CIRCOLO_LISTING_VERSION, 'all' );
+        
+        $circolo_params = array( 'marketplace_url' => (site_url() . "/marketplace/")  );
+        wp_localize_script( CIRCOLO_LISTING_PLUGIN_NAME . '-marketplace-js', 'circolo_params', $circolo_params );
         //https://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css
         ob_start();
         $user_favorites = Circolo_Listing_Helper::get_user_favorites();
+        //$countries = Circolo_Listing_Helper::get_countries();
+        //var_dump($countries);
+        $countries = [
+            'IT' => 'Italy',
+            'PT' => 'Portugal',
+            'GB' => 'United Kingdom'
+        ];
+        $selectedCountry = $country;
         require plugin_dir_path( dirname( __FILE__ ) ) . 'public/partials/marketplace-header.php';
         $loop = new WP_Query( $args );
         //echo '<pre>'.print_r($loop, true).'</pre>';
